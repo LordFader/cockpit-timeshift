@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" class="pf-v6-theme-dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timeshift · Cockpit · DEV</title>
+  <link rel="stylesheet" href="timeshift.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        <span>Cockpit</span>
+      </div>
+      <div class="topbar-title">
+  Timeshift <span class="dev-badge">DEV</span>
+</div>
+      <div class="topbar-actions">
+        <span class="connection"><span class="status-dot" id="connectionDot"></span><span id="connectionText">Connected</span></span>
+        <button class="icon-button" id="themeToggle" title="Toggle theme">◐</button>
+        <button class="user-button" type="button">Cockpit</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" id="sidebar">
+        <nav aria-label="Main navigation">
+          <button class="nav-item active" data-view="overview"><span>▦</span>Overview</button>
+          <button class="nav-item" data-view="snapshots"><span>◫</span>Snapshots</button>
+          <button class="nav-item" data-view="schedule"><span>◷</span>Schedule</button>
+          <button class="nav-item" data-view="settings"><span>⚙</span>Settings</button>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="mini-label">HOST</span>
+          <strong id="hostName">localhost</strong>
+          <span class="muted">Linux · Timeshift</span>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">SYSTEM PROTECTION</div>
+            <h1 id="pageTitle">Timeshift</h1>
+            <p id="pageDescription">Create, inspect and restore system snapshots.</p>
+          </div>
+          <div class="heading-actions">
+            <button class="secondary-button" id="refresh" type="button">↻ Refresh</button>
+            <button class="primary-button" id="createSnapshot" type="button">＋ Create snapshot</button>
+          </div>
+        </div>
+
+        <div id="globalError" class="danger-card hidden" role="alert"></div>
+
+        <section id="overviewView" class="view">
+          <div class="status-banner" id="statusBanner">
+            <div class="status-icon" id="statusIcon">✓</div>
+            <div>
+              <strong id="protectionStatus">Checking Timeshift…</strong>
+              <span id="protectionSub">Connecting to /usr/bin/timeshift.</span>
+            </div>
+            <span class="badge success" id="scheduleBadge">Checking</span>
+          </div>
+
+          <div class="card-grid four">
+            <article class="stat-card">
+              <span class="stat-label">Snapshots</span>
+              <strong id="snapshotCount">—</strong>
+              <span class="stat-meta">restore points</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Last snapshot</span>
+              <strong id="lastSnapshot">—</strong>
+              <span class="stat-meta" id="lastSnapshotType">—</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Free space</span>
+              <strong id="diskFree">—</strong>
+              <span class="stat-meta" id="diskMeta">snapshot storage</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Next snapshot</span>
+              <strong id="nextSnapshot">—</strong>
+              <span class="stat-meta" id="nextSnapshotMeta">systemd timer</span>
+            </article>
+          </div>
+
+          <div class="section-header">
+            <div>
+              <h2>Recent snapshots</h2>
+              <p>The latest restore points on this system.</p>
+            </div>
+            <button class="secondary-button" data-view-target="snapshots" type="button">View all</button>
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Type</th><th>Comment</th><th>Size</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="recentTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="snapshotsView" class="view hidden">
+          <div class="toolbar">
+            <div class="search-wrap">
+              <span>⌕</span>
+              <input id="snapshotSearch" type="search" placeholder="Search snapshots" autocomplete="off">
+            </div>
+            <select id="typeFilter" class="select">
+              <option value="all">All types</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="on-demand">On-demand</option>
+            </select>
+          </div>
+
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Type</th><th>Comment</th><th>Size</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="snapshotTable"></tbody>
+            </table>
+            <div id="emptyState" class="empty-state hidden">
+              <div class="empty-icon">◫</div>
+              <h3>No snapshots found</h3>
+              <p>Try changing the search or filter.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="scheduleView" class="view hidden">
+          <div class="settings-card">
+            <div class="settings-title">
+              <div>
+                <h2>Automatic snapshots</h2>
+                <p>The Cockpit timer creates snapshots using the installed Timeshift executable.</p>
+              </div>
+              <label class="switch" title="Enable automatic snapshots">
+                <input id="scheduleEnabled" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>Frequency
+                <select id="frequency" class="select">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly · Monday</option>
+                  <option value="monthly">Monthly · 1st</option>
+                </select>
+              </label>
+
+              <label>Time
+                <input id="scheduleTime" class="input" type="time" value="02:00">
+              </label>
+
+              <label class="full">Snapshot comment
+                <input id="scheduleComment" class="input" value="Scheduled system snapshot" maxlength="120">
+              </label>
+            </div>
+
+            <div class="info-box">
+              <strong>Retention</strong>
+              <span>Retention is deliberately managed by Timeshift. This panel does not invent or silently override Timeshift's configured retention policy.</span>
+            </div>
+
+            <div class="settings-actions">
+              <button class="primary-button" id="saveSchedule" type="button">Save schedule</button>
+              <span id="scheduleSaved" class="saved-message"></span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="section-header compact">
+              <div>
+                <h2>Timer status</h2>
+                <p>Live systemd state for cockpit-timeshift.timer.</p>
+              </div>
+              <button class="secondary-button" id="refreshTimer" type="button">Refresh</button>
+            </div>
+            <pre id="timerStatus">Checking…</pre>
+          </div>
+        </section>
+
+        <section id="settingsView" class="view hidden">
+          <div class="settings-card">
+            <h2>Timeshift integration</h2>
+            <p>Live information from the installed host executable.</p>
+            <div class="form-grid">
+              <label>Executable
+                <input class="input" value="/usr/bin/timeshift" id="snapshotLocation" readonly>
+              </label>
+              <label>Version
+                <input class="input" id="version" readonly>
+              </label>
+              <label>Mode
+                <input class="input" id="snapshotMode" readonly>
+              </label>
+              <label>Privilege
+                <input class="input" id="privilege" readonly>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2>Storage</h2>
+            <p id="storageInfo">Loading…</p>
+            <pre id="devices">Loading…</pre>
+          </div>
+
+          <div class="danger-card">
+            <div>
+              <h2>Danger zone</h2>
+              <p>These actions are destructive and cannot be undone.</p>
+            </div>
+            <button class="danger-button" id="clearSnapshots" type="button">Delete all snapshots</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h2 id="modalTitle"></h2>
+        <button class="icon-button" id="closeModal" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="modalBody"></div>
+      <div id="progressArea" class="progress-area hidden" aria-live="polite">
+        <div class="progress-head">
+          <div><strong id="progressTitle">Working…</strong><span id="progressPhase">Preparing Timeshift</span></div>
+          <strong id="progressPercent">—</strong>
+        </div>
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+        <div class="progress-meta"><span id="progressElapsed">00:00</span><span id="progressCounter">Waiting for output…</span></div>
+        <pre id="progressLog" class="progress-log"></pre>
+      </div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="../base1/cockpit.js"></script>
+  <script src="timeshift.js"></script>
+</body>
+</html>

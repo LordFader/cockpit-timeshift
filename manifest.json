@@ -1,0 +1,13 @@
+{
+  "version": 0,
+  "tools": {
+    "timeshift-dev": {
+      "label": "Timeshift Dev",
+      "path": "index.html",
+      "order": 51
+    }
+  },
+  "requires": {
+    "cockpit": "215"
+  }
+}

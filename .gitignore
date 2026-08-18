@@ -1,0 +1,18 @@
+# Stable installation — never track the stable branch in dev repo
+/usr/share/cockpit/timeshift/
+
+# Backup directories
+/backup/
+/*.bak
+*/backup-*
+
+# Cache and temp files
+*.cache
+*.tmp
+
+# Operating system artifacts
+.DS_Store
+Thumbs.db
+
+# Environment variables or secrets (if any ever added)
+.env
