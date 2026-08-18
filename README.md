@@ -90,3 +90,4 @@ under `/usr/share/cockpit/timeshift-dev` and leaves the stable Timeshift
 application untouched.
 
 See `DEV_INSTALL.md` and `DEVELOPMENT.md`.
+updated
