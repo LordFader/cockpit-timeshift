@@ -18,7 +18,9 @@
     scheduleEnabled: false,
     timerActive: false,
     nextSnapshot: "--",
-    configured: true
+    configured: true,
+    devicesList: [],
+    backupUuid: ""
   };
 
   const $ = id => document.getElementById(id);
@@ -81,18 +83,121 @@
     }
   }
 
-  async function timeshiftIsConfigured() {
+  async function readTimeshiftConfig() {
     try {
-      const file = cockpit.file("/etc/timeshift/timeshift.json", { superuser: "require" });
+      const file = cockpit.file("/etc/timeshift/timeshift.json");
       const text = String((await file.read()) || "");
       file.close();
-      const cfg = JSON.parse(text);
-      const firstRun = String(cfg.do_first_run).toLowerCase() === "true";
-      const deviceUuid = String(cfg.backup_device_uuid || "").trim();
-      return !firstRun && deviceUuid !== "";
+      return JSON.parse(text);
     } catch {
       return null;
     }
+  }
+
+  async function timeshiftIsConfigured() {
+    const cfg = await readTimeshiftConfig();
+    if (!cfg) return null;
+    const firstRun = String(cfg.do_first_run).toLowerCase() === "true";
+    const deviceUuid = String(cfg.backup_device_uuid || "").trim();
+    return !firstRun && deviceUuid !== "";
+  }
+
+  const LINUX_FS = ["ext2", "ext3", "ext4", "xfs", "btrfs", "f2fs"];
+
+  function humanBytes(bytes) {
+    if (!Number.isFinite(bytes) || bytes < 0) return "—";
+    const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"];
+    let v = bytes, i = 0;
+    while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+    return `${v.toFixed(i >= 2 ? 1 : 0)} ${units[i]}`;
+  }
+
+  function shortUuid(uuid) {
+    return uuid && uuid.length > 8 ? `${uuid.slice(0, 8)}…` : uuid || "—";
+  }
+
+  function flattenDevices(nodes, out = []) {
+    for (const node of nodes || []) {
+      if (node.children && node.children.length) {
+        flattenDevices(node.children, out);
+      } else if (LINUX_FS.includes(node.fstype)) {
+        out.push(node);
+      }
+    }
+    return out;
+  }
+
+  async function loadDeviceData() {
+    try {
+      const json = await cockpit.spawn([
+        "lsblk", "-J", "-b", "-o", "NAME,PATH,SIZE,FSTYPE,LABEL,UUID,MOUNTPOINTS"
+      ]);
+      const data = JSON.parse(json);
+      state.devicesList = flattenDevices(data.blockdevices).map(n => {
+        const mp = n.mountpoints;
+        const mounts = Array.isArray(mp)
+          ? mp.filter(Boolean)
+          : String(mp || "").split(/[\r\n]+/).filter(Boolean);
+        return {
+          device: n.path,
+          name: n.name,
+          size: Number(n.size) || 0,
+          fstype: n.fstype,
+          label: n.label || "",
+          uuid: n.uuid || "",
+          mounts
+        };
+      });
+    } catch {
+      state.devicesList = [];
+    }
+    const cfg = await readTimeshiftConfig();
+    state.backupUuid = (cfg && String(cfg.backup_device_uuid || "").trim()) || "";
+  }
+
+  function renderDevices() {
+    const host = $("deviceList");
+    if (!host) return;
+    host.textContent = "";
+
+    if (!state.devicesList.length) {
+      host.innerHTML = `<p class="muted">No eligible Linux devices found (ext4/xfs/btrfs). Press Refresh to rescan.</p>`;
+      return;
+    }
+
+    for (const d of state.devicesList) {
+      const selected = d.uuid === state.backupUuid;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `device-item${selected ? " selected" : ""}`;
+      btn.dataset.device = d.device;
+      btn.title = selected ? "Current backup device" : "Set as backup device";
+      btn.innerHTML = `
+        <span class="device-radio">${selected ? "●" : "○"}</span>
+        <span class="device-main">
+          <strong>${esc(d.device)}</strong>
+          <em>${esc(humanBytes(d.size))} · ${esc(d.fstype)}${d.label ? ` · ${esc(d.label)}` : ""}${d.uuid ? ` · ${esc(shortUuid(d.uuid))}` : ""}</em>
+        </span>
+        <span class="device-mount">${d.mounts.length ? "mounted" : "not mounted"}</span>
+      `;
+      host.appendChild(btn);
+    }
+  }
+
+  async function selectDevice(device) {
+    const dev = state.devicesList.find(d => d.device === device);
+    if (!dev || !dev.uuid) {
+      toast("Device has no UUID and cannot be used by Timeshift.", true);
+      return;
+    }
+    const cfg = (await readTimeshiftConfig()) || {};
+    cfg.backup_device_uuid = dev.uuid;
+    cfg.parent_device_uuid = dev.uuid;
+    cfg.do_first_run = "false";
+    await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
+    state.backupUuid = dev.uuid;
+    toast(`Backup device set to ${dev.device}.`);
+    await refresh();
   }
 
   function parseList(text) {
@@ -228,6 +333,7 @@
       `Device: ${state.device} · UUID: ${state.uuid} · Mode: ${state.mode} · Status: ${state.timeshiftStatus}`;
 
     $("devices").textContent = state.devices;
+    renderDevices();
   }
 
   function renderProtection() {
@@ -331,6 +437,7 @@
 
     try {
       await refreshTimeshift();
+      try { await loadDeviceData(); } catch {}
       renderStats();
       renderTables();
       renderSettings();
@@ -559,10 +666,27 @@
   }
 
   function restoreSnapshot(id) {
+    const snap = state.snapshots.find(s => s.id === id);
+    const meta = snap
+      ? `
+       <ul class="summary-list">
+         <li><strong>${esc(`${snap.date} ${snap.time}`)}</strong> · ${esc(snap.type)}${snap.comment !== "--" ? ` · ${esc(snap.comment)}` : ""}</li>
+       </ul>`
+      : "";
     openModal(
       "Restore snapshot",
-      `<p>Restore the system to <strong>${esc(id)}</strong>?</p>
-       <p style="margin-top:12px;color:var(--warning)">This changes the system and may require a reboot.</p>`,
+      `<p>Restore the system to snapshot <strong>${esc(id)}</strong>?</p>
+       ${meta}
+       <div class="restore-notes">
+         <p><strong>What will happen</strong></p>
+         <ul>
+           <li>System files and settings are restored to the state of this snapshot.</li>
+           <li>Boot files and EFI are handled automatically by Timeshift.</li>
+           <li>User data under <code>/home</code> is excluded by default and remains untouched.</li>
+           <li>Timeshift reinstalls the bootloader automatically if needed.</li>
+         </ul>
+       </div>
+       <p style="margin-top:12px;color:var(--warning)">This changes the system and requires a reboot to complete.</p>`,
       "Restore",
       async () => {
         await runSnapshotOperation(["--restore", "--snapshot", id, "--scripted"], "Restoring snapshot");
@@ -699,6 +823,16 @@
 
     $("recentTable").addEventListener("click", handleTableAction);
     $("snapshotTable").addEventListener("click", handleTableAction);
+
+    const deviceList = $("deviceList");
+    if (deviceList) {
+      deviceList.addEventListener("click", e => {
+        const btn = e.target.closest("button[data-device]");
+        if (!btn || btn.disabled) return;
+        btn.disabled = true;
+        selectDevice(btn.dataset.device).finally(() => { btn.disabled = false; });
+      });
+    }
 
     $("mobileMenu").onclick = () => $("sidebar").classList.toggle("open");
     $("closeModal").onclick = closeModal;
