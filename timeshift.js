@@ -56,7 +56,7 @@
 
   function run(args) {
     return cockpit.spawn([TS, ...args], {
-      superuser: "require",
+      superuser: "try",
       err: "message"
     });
   }
@@ -66,6 +66,10 @@
       superuser: "require",
       err: "message"
     });
+  }
+
+  function sysRead(args) {
+    return cockpit.spawn(["systemctl", ...args], { err: "message" });
   }
 
   async function writeSystemFile(path, content) {
@@ -285,10 +289,10 @@
     let active = "inactive";
     let next = "";
 
-    try { enabled = String(await sys(["is-enabled", TIMER])).trim(); } catch {}
-    try { active = String(await sys(["is-active", TIMER])).trim(); } catch {}
+    try { enabled = String(await sysRead(["is-enabled", TIMER])).trim(); } catch {}
+    try { active = String(await sysRead(["is-active", TIMER])).trim(); } catch {}
     try {
-      next = String(await sys([
+      next = String(await sysRead([
         "show", TIMER, "--property=NextElapseUSecRealtime", "--value"
       ])).trim();
     } catch {}
