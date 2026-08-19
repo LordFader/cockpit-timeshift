@@ -138,7 +138,7 @@
             <div class="settings-title">
               <div>
                 <h2>Automatic snapshots</h2>
-                <p>The Cockpit timer creates snapshots using the installed Timeshift executable.</p>
+                <p>Uses Timeshift's native scheduler: an hourly check that creates a snapshot when a level is due.</p>
               </div>
               <label class="switch" title="Enable automatic snapshots">
                 <input id="scheduleEnabled" type="checkbox">
@@ -146,27 +146,32 @@
               </label>
             </div>
 
-            <div class="form-grid">
-              <label>Frequency
-                <select id="frequency" class="select">
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly · Monday</option>
-                  <option value="monthly">Monthly · 1st</option>
-                </select>
+            <div class="level-list">
+              <label class="level-row">
+                <span><input type="checkbox" id="schedHourly"> <strong>Hourly</strong></span>
+                <span class="level-count"><input class="input" id="countHourly" type="number" min="1" max="20" value="2" title="Retention count"> kept</span>
               </label>
-
-              <label>Time
-                <input id="scheduleTime" class="input" type="time" value="02:00">
+              <label class="level-row">
+                <span><input type="checkbox" id="schedDaily"> <strong>Daily</strong></span>
+                <span class="level-count"><input class="input" id="countDaily" type="number" min="1" max="20" value="5" title="Retention count"> kept</span>
               </label>
-
-              <label class="full">Snapshot comment
-                <input id="scheduleComment" class="input" value="Scheduled system snapshot" maxlength="120">
+              <label class="level-row">
+                <span><input type="checkbox" id="schedWeekly"> <strong>Weekly</strong></span>
+                <span class="level-count"><input class="input" id="countWeekly" type="number" min="1" max="20" value="3" title="Retention count"> kept</span>
+              </label>
+              <label class="level-row">
+                <span><input type="checkbox" id="schedMonthly"> <strong>Monthly</strong></span>
+                <span class="level-count"><input class="input" id="countMonthly" type="number" min="1" max="20" value="2" title="Retention count"> kept</span>
+              </label>
+              <label class="level-row">
+                <span><input type="checkbox" id="schedBoot"> <strong>At boot</strong></span>
+                <span class="level-count"><input class="input" id="countBoot" type="number" min="1" max="20" value="5" title="Retention count"> kept</span>
               </label>
             </div>
 
             <div class="info-box">
               <strong>Retention</strong>
-              <span>Retention is deliberately managed by Timeshift. This panel does not invent or silently override Timeshift's configured retention policy.</span>
+              <span>Retention counts are written to the Timeshift config and enforced by Timeshift through its tag system. Boot snapshots are created roughly 10 minutes after startup.</span>
             </div>
 
             <div class="settings-actions">
@@ -179,7 +184,7 @@
             <div class="section-header compact">
               <div>
                 <h2>Timer status</h2>
-                <p>Live systemd state for cockpit-timeshift.timer.</p>
+                <p>Live systemd state for the Timeshift scheduler unit.</p>
               </div>
               <button class="secondary-button" id="refreshTimer" type="button">Refresh</button>
             </div>

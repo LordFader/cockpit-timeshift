@@ -2,8 +2,10 @@
   "use strict";
 
   const TS = "/usr/bin/timeshift";
-  const TIMER = "cockpit-timeshift.timer";
-  const SERVICE = "cockpit-timeshift.service";
+  const TIMER = "timeshift.timer";
+  const SERVICE = "timeshift.service";
+  const LEGACY_TIMER = "cockpit-timeshift.timer";
+  const LEGACY_SERVICE = "cockpit-timeshift.service";
 
   const state = {
     snapshots: [],
@@ -114,6 +116,20 @@
 
   function shortUuid(uuid) {
     return uuid && uuid.length > 8 ? `${uuid.slice(0, 8)}…` : uuid || "—";
+  }
+
+  function cap(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  const SCHEDULE_LEVELS = ["hourly", "daily", "weekly", "monthly", "boot"];
+
+  function readScheduleLevels(cfg = {}) {
+    const levels = {};
+    for (const lvl of SCHEDULE_LEVELS) {
+      levels[lvl] = String(cfg[`schedule_${lvl}`]).toLowerCase() === "true";
+    }
+    return levels;
   }
 
   function flattenDevices(nodes, out = []) {
@@ -407,19 +423,27 @@
   }
 
   async function refreshSchedule() {
-    const t = await getTimerState();
+    const cfg = (await readTimeshiftConfig()) || {};
+    const levels = readScheduleLevels(cfg);
 
-    state.scheduleEnabled = t.enabled === "enabled";
+    for (const lvl of SCHEDULE_LEVELS) {
+      $(`sched${cap(lvl)}`).checked = levels[lvl];
+      const count = $(`count${cap(lvl)}`);
+      if (count) count.value = String(cfg[`count_${lvl}`] ?? (lvl === "hourly" ? "2" : lvl === "boot" ? "5" : "3"));
+    }
+
+    state.scheduleEnabled = SCHEDULE_LEVELS.some(lvl => levels[lvl]);
+    $("scheduleEnabled").checked = state.scheduleEnabled;
+
+    const t = await getTimerState();
     state.timerActive = t.active === "active";
     state.nextSnapshot = t.next || (state.scheduleEnabled ? "Waiting" : "Not scheduled");
-
-    $("scheduleEnabled").checked = state.scheduleEnabled;
 
     $("timerStatus").textContent = [
       `enabled: ${t.enabled}`,
       `active: ${t.active}`,
       `next: ${t.next || "--"}`,
-      `unit: ${SERVICE}`,
+      `unit: ${TIMER}`,
       `executable: ${TS}`
     ].join("\n");
 
@@ -727,71 +751,66 @@
     );
   }
 
-  function buildSchedule() {
-    const enabled = $("scheduleEnabled").checked;
-    const frequency = $("frequency").value;
-    const time = $("scheduleTime").value || "02:00";
-    const comment = $("scheduleComment").value.trim() || "Scheduled system snapshot";
-    const [hour, minute] = time.split(":");
-
-    const calendar =
-      frequency === "weekly"
-        ? `Mon *-*-* ${hour}:${minute}:00`
-        : frequency === "monthly"
-          ? `*-*-01 ${hour}:${minute}:00`
-          : `*-*-* ${hour}:${minute}:00`;
-
-    const service = [
-      "[Unit]",
-      "Description=Cockpit Timeshift scheduled snapshot",
-      "After=local-fs.target",
-      "ConditionPathExists=/usr/bin/timeshift",
-      "",
-      "[Service]",
-      "Type=oneshot",
-      `ExecStart=${TS} --create --comments ${JSON.stringify(comment)} --scripted`,
-      ""
-    ].join("\n");
-
-    const timer = [
-      "[Unit]",
-      "Description=Cockpit Timeshift snapshot schedule",
-      "",
-      "[Timer]",
-      `OnCalendar=${calendar}`,
-      "Persistent=true",
-      "AccuracySec=1min",
-      `Unit=${SERVICE}`,
-      "",
-      "[Install]",
-      "WantedBy=timers.target",
-      ""
-    ].join("\n");
-
-    return { enabled, frequency, time, calendar, service, timer };
-  }
-
   async function saveSchedule() {
-    const c = buildSchedule();
+    const cfg = (await readTimeshiftConfig()) || {};
+    const enabled = $("scheduleEnabled").checked;
+    const onLevels = new Set();
 
-    if (!c.enabled) {
+    for (const lvl of SCHEDULE_LEVELS) {
+      const on = !enabled ? false : $(`sched${cap(lvl)}`).checked === true;
+      cfg[`schedule_${lvl}`] = on ? "true" : "false";
+      const raw = parseInt(String($(`count${cap(lvl)}`)?.value || "0"), 10);
+      const n = Math.max(1, Math.min(20, Number.isFinite(raw) ? raw : 1));
+      cfg[`count_${lvl}`] = String(on ? n : n);
+      if (on) onLevels.add(lvl);
+    }
+
+    if (enabled && !onLevels.size) {
+      toast("Enable at least one snapshot level.", true);
+      return;
+    }
+
+    await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
+
+    if (enabled) {
+      await writeSystemFile(`/etc/systemd/system/${SERVICE}`, [
+        "[Unit]",
+        "Description=Run timeshift on schedule",
+        "ConditionPathExists=/usr/bin/timeshift",
+        "",
+        "[Service]",
+        "Type=oneshot",
+        "ExecStart=/usr/bin/timeshift --check --scripted",
+        ""
+      ].join("\n"));
+      await writeSystemFile(`/etc/systemd/system/${TIMER}`, [
+        "[Unit]",
+        "Description=Run timeshift on schedule",
+        "",
+        "[Timer]",
+        "OnCalendar=hourly",
+        "Persistent=true",
+        "AccuracySec=1min",
+        `Unit=${SERVICE}`,
+        "",
+        "[Install]",
+        "WantedBy=timers.target",
+        ""
+      ].join("\n"));
+      await sys(["daemon-reload"]);
+      await sys(["enable", "--now", TIMER]);
+      try { await sys(["disable", "--now", LEGACY_TIMER]); } catch {}
+      $("scheduleSaved").textContent = "Schedule enabled (timeshift checks hourly, snapshots when a level is due).";
+      toast("Timeshift native scheduling enabled.");
+    } else {
       try { await sys(["disable", "--now", TIMER]); } catch {}
+      try { await sys(["disable", "--now", LEGACY_TIMER]); } catch {}
       state.scheduleEnabled = false;
       state.timerActive = false;
       $("scheduleSaved").textContent = "Schedule disabled.";
       toast("Schedule disabled.");
-      await refreshSchedule();
-      renderStats();
-      return;
     }
 
-    await writeSystemFile(`/etc/systemd/system/${SERVICE}`, c.service);
-    await writeSystemFile(`/etc/systemd/system/${TIMER}`, c.timer);
-    await sys(["daemon-reload"]);
-    await sys(["enable", "--now", TIMER]);
-
-    $("scheduleSaved").textContent = `Saved: ${c.frequency} at ${c.time}.`;
-    toast("Systemd schedule enabled.");
     await refreshSchedule();
     renderStats();
   }

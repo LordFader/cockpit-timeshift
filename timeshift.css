@@ -323,3 +323,11 @@ pre{
 .restore-notes>p{font-size:13px;margin:0}
 .restore-notes ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.6}
 .summary-list{margin:10px 0 0;padding-left:18px;color:var(--text);font-size:13px}
+
+/* Schedule levels */
+.level-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.level-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--panel-2,#0d1117)}
+.level-row>span:first-child{display:flex;align-items:center;gap:10px}
+.level-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.level-count{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+.level-count .input{width:64px}
