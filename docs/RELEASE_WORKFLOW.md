@@ -85,16 +85,27 @@ Antes de actualizar:
 
 # Actualizar STABLE
 
-Copiar apenas os ficheiros aprovados.
+Usar o `install.sh` da DEV para instalar a versão de produção:
 
-Exemplo:
+    sudo sh /usr/share/cockpit/timeshift-dev/install.sh
 
-    sudo cp \
-      /usr/share/cockpit/timeshift-dev/index.html \
-      /usr/share/cockpit/timeshift-dev/manifest.json \
-      /usr/share/cockpit/timeshift-dev/timeshift.js \
-      /usr/share/cockpit/timeshift-dev/timeshift.css \
-      /usr/share/cockpit/timeshift/
+O script gera a build de produção a partir dos ficheiros da DEV, aplicando
+transformações que removem os marcadores exclusivos do ambiente de
+desenvolvimento:
+
+- `manifest.json`: tool `timeshift-dev` → `timeshift`; label
+  `Timeshift Dev` → `Timeshift` (o separador passa a chamar-se **Timeshift**).
+- `index.html`: título `Timeshift · Cockpit · DEV` → `Timeshift · Cockpit` e
+  badge `<span class="dev-badge">DEV</span>` removido.
+- `timeshift.css`: regra `.dev-badge` (exclusiva do DEV) eliminada.
+- `timeshift.js`: copiado tal qual (não tem marcadores DEV).
+
+Os ficheiros em `/usr/share/cockpit/timeshift-dev/` ficam intactos: a DEV
+mantém sempre os marcadores DEV enquanto estiver em desenvolvimento.
+
+> **Regra:** nunca copiar manualmente os ficheiros DEV para a STABLE sem
+> aplicar estas transformações, caso contrário o separador aparece como
+> `Timeshift Dev` e o badge `DEV` fica visível na versão estável.
 
 ---
 

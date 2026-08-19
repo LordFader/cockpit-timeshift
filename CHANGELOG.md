@@ -18,5 +18,8 @@ Parallel development package based on the first approved public beta.
 
 ### Notes
 - The stable installation at `/usr/share/cockpit/timeshift` is not modified.
+- `install.sh` generates the production build and strips the DEV markers
+  (`.dev-badge` badge, `…DEV` title, `Timeshift Dev` tool/label), so the
+  stable app shows only **Timeshift**.
 - Create, Delete and Restore are the currently tested core operations.
 - Schedule functionality remains under testing.
