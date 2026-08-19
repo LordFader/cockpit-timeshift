@@ -208,6 +208,22 @@
           </div>
 
           <div class="settings-card">
+            <div class="settings-title">
+              <div>
+                <h2>Backup device</h2>
+                <p>Choose which Linux device stores the snapshots. Matches Timeshift's Settings ▸ Location.</p>
+              </div>
+            </div>
+            <div id="deviceList" class="device-list">
+              <p class="muted">Scanning devices…</p>
+            </div>
+            <div class="info-box">
+              <strong>Note</strong>
+              <span>Snapshots are stored on the selected device under <code>/timeshift</code>. A separate or external device is recommended.</span>
+            </div>
+          </div>
+
+          <div class="settings-card">
             <h2>Storage</h2>
             <p id="storageInfo">Loading…</p>
             <pre id="devices">Loading…</pre>

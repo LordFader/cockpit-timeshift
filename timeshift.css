@@ -305,3 +305,21 @@ pre{
 .progress-log{max-height:145px;overflow:auto;margin:12px 0 0;padding:10px;background:var(--panel-3,#111417);border:1px solid var(--border);border-radius:4px;color:var(--muted);font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
 .operation-running .modal-actions .secondary-button{display:none}
 .operation-running .modal-actions{justify-content:flex-end}
+
+/* Backup device selector */
+.device-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.device-item{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;background:var(--panel-2,#0d1117);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;text-align:left;font:inherit}
+.device-item:hover{border-color:var(--accent)}
+.device-item.selected{border-color:var(--accent);background:var(--panel-3,#111417)}
+.device-radio{color:var(--accent);font-size:16px;width:18px;text-align:center;flex:none}
+.device-main{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.device-main strong{font-size:14px}
+.device-main em{font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.device-mount{font-size:11px;color:var(--muted);flex:none}
+.device-item:disabled{opacity:.55;cursor:progress}
+
+/* Restore summary */
+.restore-notes{margin-top:14px;padding:12px;background:var(--panel-2,#0d1117);border:1px solid var(--border);border-radius:6px}
+.restore-notes>p{font-size:13px;margin:0}
+.restore-notes ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.6}
+.summary-list{margin:10px 0 0;padding-left:18px;color:var(--text);font-size:13px}
