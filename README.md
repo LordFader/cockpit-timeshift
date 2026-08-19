@@ -107,6 +107,10 @@ Remotes on the local dev checkout:
    cd /usr/share/cockpit/timeshift-dev && sudo ./install.sh
    ```
 
+   `install.sh` generates the production build, stripping the DEV markers
+   (`.dev-badge`, `…DEV` title, `Timeshift Dev` label/manifest tool) so the
+   stable app shows only **Timeshift**.
+
 5. Hard-refresh Cockpit in the browser.
 
 ## Packaging
