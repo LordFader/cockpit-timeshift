@@ -17,7 +17,8 @@
     freeSpace: "--",
     scheduleEnabled: false,
     timerActive: false,
-    nextSnapshot: "--"
+    nextSnapshot: "--",
+    configured: true
   };
 
   const $ = id => document.getElementById(id);
@@ -73,6 +74,20 @@
       await file.replace(content);
     } finally {
       file.close();
+    }
+  }
+
+  async function timeshiftIsConfigured() {
+    try {
+      const file = cockpit.file("/etc/timeshift/timeshift.json", { superuser: "require" });
+      const text = String((await file.read()) || "");
+      file.close();
+      const cfg = JSON.parse(text);
+      const firstRun = String(cfg.do_first_run).toLowerCase() === "true";
+      const deviceUuid = String(cfg.backup_device_uuid || "").trim();
+      return !firstRun && deviceUuid !== "";
+    } catch {
+      return null;
     }
   }
 
@@ -219,7 +234,12 @@
 
     banner?.classList.remove("warning", "error");
 
-    if (state.timeshiftStatus !== "--" && state.timeshiftStatus !== "OK") {
+    if (state.configured === false) {
+      banner?.classList.add("warning");
+      icon.textContent = "!";
+      status.textContent = "Timeshift not configured";
+      sub.textContent = "No backup device selected. Configure Timeshift to enable protection.";
+    } else if (state.timeshiftStatus !== "--" && state.timeshiftStatus !== "OK") {
       banner?.classList.add("error");
       icon.textContent = "!";
       status.textContent = "Timeshift reports a problem";
@@ -321,8 +341,22 @@
     } catch (error) {
       $("connectionText").textContent = "Error";
       $("connectionDot").classList.add("offline");
-      setError(`Unable to communicate with ${TS}. ${error?.message || String(error)}`);
-      toast("Timeshift communication failed.", true);
+
+      const configured = await timeshiftIsConfigured();
+      const msg = String(error?.message || error || "");
+      const looksUnconfigured = configured === false ||
+        (configured === null && /gee_abstract_collection_get_size|Device\s*:\s*Not (Selected|Found)/i.test(msg));
+
+      state.configured = configured !== false;
+      renderProtection();
+
+      if (looksUnconfigured) {
+        setError(`${TS} is installed but has no backup device configured. Open the Timeshift app ("sudo timeshift-gtk") to select a backup device, then refresh.`);
+        toast("Timeshift is not configured to use a backup device.", true);
+      } else {
+        setError(`Unable to communicate with ${TS}. ${msg}`);
+        toast("Timeshift communication failed.", true);
+      }
     }
   }
 
