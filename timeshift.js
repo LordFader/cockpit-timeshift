@@ -22,7 +22,8 @@
     nextSnapshot: "--",
     configured: true,
     devicesList: [],
-    backupUuid: ""
+    backupUuid: "",
+    excludes: []
   };
 
   const $ = id => document.getElementById(id);
@@ -214,6 +215,53 @@
     state.backupUuid = dev.uuid;
     toast(`Backup device set to ${dev.device}.`);
     await refresh();
+  }
+
+  function renderExcludes() {
+    const input = $("excludesInput");
+    if (input && input !== document.activeElement) {
+      input.value = state.excludes.join("\n");
+    }
+  }
+
+  async function refreshExcludes() {
+    const cfg = await readTimeshiftConfig();
+    const list = (cfg && Array.isArray(cfg.exclude)) ? cfg.exclude : [];
+    state.excludes = list.filter(x => typeof x === "string");
+    renderExcludes();
+  }
+
+  async function saveExcludes() {
+    const raw = String($("excludesInput")?.value || "").split(/\r?\n/);
+    const list = raw.map(x => x.trim()).filter(Boolean);
+    const cfg = (await readTimeshiftConfig()) || {};
+    cfg.exclude = list;
+    await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
+    state.excludes = list;
+    $("excludesSaved").textContent = "Exclusions saved.";
+    toast("Exclusion list updated.");
+  }
+
+  async function snapshotSize(id) {
+    for (const p of [`/timeshift/snapshots/${id}`, `/run/timeshift/backup/snapshots/${id}`]) {
+      try {
+        const out = await cockpit.spawn(["du", "-sb", p], {
+          superuser: "try",
+          err: "message"
+        });
+        const m = String(out).trim().match(/^\s*(\d+)/);
+        if (m) return humanBytes(Number(m[1]));
+      } catch {}
+    }
+    return "—";
+  }
+
+  async function loadSnapshotSizes() {
+    for (const snap of state.snapshots) {
+      if (snap.size && snap.size !== "--") continue;
+      snap.size = await snapshotSize(snap.id);
+      renderTables();
+    }
   }
 
   function parseList(text) {
@@ -462,8 +510,10 @@
     try {
       await refreshTimeshift();
       try { await loadDeviceData(); } catch {}
+      try { await refreshExcludes(); } catch {}
       renderStats();
       renderTables();
+      loadSnapshotSizes();
       renderSettings();
       renderProtection();
 
@@ -833,6 +883,15 @@
       } catch (error) {
         setError(`Could not configure systemd: ${error?.message || String(error)}`);
         toast("Schedule configuration failed.", true);
+      }
+    };
+
+    $("saveExcludes").onclick = async () => {
+      try {
+        await saveExcludes();
+      } catch (error) {
+        setError(`Could not save exclusions: ${error?.message || String(error)}`);
+        toast("Could not save exclusions.", true);
       }
     };
 
