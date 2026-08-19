@@ -73,6 +73,42 @@ communicates directly with the installed `/usr/bin/timeshift` executable.
 
 Development installations can use `install.sh`; no symlink is required.
 
+## Fork lineage
+
+This project is a fork lineage of
+[isivisi/cockpit-timeshift](https://github.com/isivisi/cockpit-timeshift)
+(original upstream, kept read-only as a reference):
+
+```text
+isivisi/cockpit-timeshift   (original upstream, reference only)
+        │
+        ▼ fork
+LordFader/cockpit-timeshift (canonical, shared collaboration repo)
+        │  collaborators: LordFader + PGodinho
+        ▼
+/usr/share/cockpit/timeshift-dev (local dev checkout)
+```
+
+Remotes on the local dev checkout:
+
+| remote     | URL                                        | purpose                      |
+|------------|--------------------------------------------|------------------------------|
+| `origin`   | `LordFader/cockpit-timeshift`              | shared push/pull (both write)|
+| `isivisi`  | `isivisi/cockpit-timeshift`                | upstream reference (read)    |
+
+## Development workflow
+
+1. Edit files in `timeshift-dev`.
+2. Check and commit: `node --check timeshift.js`
+3. Push to `origin` (branch + PR for changes to `master`).
+4. Publish the stable install (requires root):
+
+   ```bash
+   cd /usr/share/cockpit/timeshift-dev && sudo ./install.sh
+   ```
+
+5. Hard-refresh Cockpit in the browser.
+
 ## Packaging
 
 A Debian package is planned for a future release. The current beta is installed
