@@ -331,3 +331,6 @@ pre{
 .level-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
 .level-count{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
 .level-count .input{width:64px}
+
+/* Exclusion filters */
+.excludes{width:100%;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.5;margin-top:14px}

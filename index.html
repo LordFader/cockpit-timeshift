@@ -229,6 +229,24 @@
           </div>
 
           <div class="settings-card">
+            <div class="settings-title">
+              <div>
+                <h2>Excluded items</h2>
+                <p>Rsync filter paths skipped during snapshots (Timeshift Filters). One pattern per line.</p>
+              </div>
+            </div>
+            <textarea id="excludesInput" class="input excludes" rows="6" spellcheck="false" placeholder="/var/cache/**&#10;/snap&#10;/mnt/data/**"></textarea>
+            <div class="info-box">
+              <strong>Note</strong>
+              <span>Home directories are already excluded by default. Add extra paths to skip, e.g. <code>/var/cache/**</code>, <code>/mnt/data/**</code>.</span>
+            </div>
+            <div class="settings-actions">
+              <button class="primary-button" id="saveExcludes" type="button">Save exclusions</button>
+              <span id="excludesSaved" class="saved-message"></span>
+            </div>
+          </div>
+
+          <div class="settings-card">
             <h2>Storage</h2>
             <p id="storageInfo">Loading…</p>
             <pre id="devices">Loading…</pre>
