@@ -13,6 +13,12 @@ jobs:
         run: node --check parsers.js timeshift.js
       - name: Unit tests
         run: node --test test/parsers.test.js
+      - name: Validate manifest schema (dev)
+        run: node scripts/validate-manifest.js manifest.json
+      - name: Validate manifest schema (production build)
+        run: |
+          sed -e 's/"timeshift-dev"/"timeshift"/' -e 's/"Timeshift Dev"/"Timeshift"/' manifest.json > /tmp/manifest.json
+          node scripts/validate-manifest.js /tmp/manifest.json --no-path-check
       - name: Lint
         run: |
           npm ci
