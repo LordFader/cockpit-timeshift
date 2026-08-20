@@ -149,23 +149,23 @@
             <div class="level-list">
               <label class="level-row">
                 <span><input type="checkbox" id="schedHourly"> <strong>Hourly</strong></span>
-                <span class="level-count"><input class="input" id="countHourly" type="number" min="1" max="20" value="2" title="Retention count"> kept</span>
+                <span class="level-count"><select class="input" id="countHourly" title="Retention count"></select> kept</span>
               </label>
               <label class="level-row">
                 <span><input type="checkbox" id="schedDaily"> <strong>Daily</strong></span>
-                <span class="level-count"><input class="input" id="countDaily" type="number" min="1" max="20" value="5" title="Retention count"> kept</span>
+                <span class="level-count"><select class="input" id="countDaily" title="Retention count"></select> kept</span>
               </label>
               <label class="level-row">
                 <span><input type="checkbox" id="schedWeekly"> <strong>Weekly</strong></span>
-                <span class="level-count"><input class="input" id="countWeekly" type="number" min="1" max="20" value="3" title="Retention count"> kept</span>
+                <span class="level-count"><select class="input" id="countWeekly" title="Retention count"></select> kept</span>
               </label>
               <label class="level-row">
                 <span><input type="checkbox" id="schedMonthly"> <strong>Monthly</strong></span>
-                <span class="level-count"><input class="input" id="countMonthly" type="number" min="1" max="20" value="2" title="Retention count"> kept</span>
+                <span class="level-count"><select class="input" id="countMonthly" title="Retention count"></select> kept</span>
               </label>
               <label class="level-row">
                 <span><input type="checkbox" id="schedBoot"> <strong>At boot</strong></span>
-                <span class="level-count"><input class="input" id="countBoot" type="number" min="1" max="20" value="5" title="Retention count"> kept</span>
+                <span class="level-count"><select class="input" id="countBoot" title="Retention count"></select> kept</span>
               </label>
             </div>
 
@@ -199,12 +199,17 @@
             <div class="form-grid">
               <label>Executable
                 <input class="input" value="/usr/bin/timeshift" id="snapshotLocation" readonly>
+                <span class="exec-check" id="execCheck">Checking…</span>
               </label>
               <label>Version
                 <input class="input" id="version" readonly>
               </label>
               <label>Mode
-                <input class="input" id="snapshotMode" readonly>
+                <select class="input" id="snapshotMode">
+                  <option value="RSYNC">RSYNC</option>
+                  <option value="BTRFS">BTRFS</option>
+                </select>
+                <span class="mode-hint">Snapshot engine. RSYNC works on most filesystems; BTRFS requires a BTRFS volume.</span>
               </label>
               <label>Privilege
                 <input class="input" id="privilege" readonly>

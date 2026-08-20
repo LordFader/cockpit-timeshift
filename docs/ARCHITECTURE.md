@@ -92,17 +92,49 @@ Snapshot information should be obtained from:
 
     timeshift --list
 
+### Snapshot mode
+
+Timeshift supports two snapshot modes:
+
+- **RSYNC** — copies the system with rsync; works on most filesystems.
+- **BTRFS** — native BTRFS snapshots; only available when the root
+  filesystem (`/`) is a BTRFS volume.
+
+The mode is stored in the Timeshift config as `btrfs_mode`
+(`/etc/timeshift/timeshift.json`).
+
+The UI derives `btrfsAvailable` from the `lsblk` device scan: a device
+whose filesystem is `btrfs` and that is mounted at `/`. The Settings
+dropdown disables the BTRFS option when unavailable, explains why via the
+mode hint, and rejects a BTRFS save with a toast instead of writing an
+invalid `btrfs_mode`. The `timeshift` executable remains the final
+authority on whether a mode is usable.
+
+### Executable validity
+
+The Settings page asserts `/usr/bin/timeshift` exists and is executable
+(`test -x`) and shows the result inline as a pass/fail indicator. The
+binary path is fixed and not user-editable: the UI runs it with elevated
+privileges, so an arbitrary path would be an unsafe root-execution
+vector.
+
+### Retention counts
+
+Each schedule level (hourly/daily/weekly/monthly/boot) exposes its
+retention count as a fixed 1–20 `<select>` (populated once in
+`refreshSchedule`), preventing out-of-range values.
+
 ---
 
 ## Systemd
 
-Scheduled operation uses:
+Scheduled operation uses the native Timeshift units:
 
-    cockpit-timeshift.service
+    timeshift.service
 
 and:
 
-    cockpit-timeshift.timer
+    timeshift.timer
 
 The UI must reflect actual systemd state.
 
