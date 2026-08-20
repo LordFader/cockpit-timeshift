@@ -1,0 +1,13 @@
+{
+  "name": "cockpit-timeshift",
+  "version": "0.1.0-beta",
+  "private": true,
+  "description": "Cockpit plugin providing a web UI for Timeshift snapshot management",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0"
+  }
+}

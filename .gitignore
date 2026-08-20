@@ -17,5 +17,8 @@ Thumbs.db
 # Environment variables or secrets (if any ever added)
 .env
 
+# Dev tooling
+node_modules/
+
 # Local backup script (optional, keep if you want it versioned)
 # git-backup.sh

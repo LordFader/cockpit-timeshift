@@ -5,10 +5,8 @@
   const TIMER = "timeshift.timer";
   const SERVICE = "timeshift.service";
   const LEGACY_TIMER = "cockpit-timeshift.timer";
-  const LEGACY_SERVICE = "cockpit-timeshift.service";
 
   const {
-    LINUX_FS,
     SCHEDULE_LEVELS,
     RECOMMENDED_COUNTS,
     humanBytes,
