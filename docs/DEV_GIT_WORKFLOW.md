@@ -44,54 +44,58 @@ Verificar Git:
 
 ---
 
-# 2. Antes de começer qualquer alteração
+# 2. Antes de qualquer alteração
 
 Executar:
 
     git status
 
-Depois:
-
-    git log --oneline -5
-
-Confirmar que estamos na branch correcta:
+Confirmar que estamos no branch canónico:
 
     git branch --show-current
 
-A branch normal de desenvolvimento deve ser:
+O branch normal de desenvolvimento é:
 
-    dev
+    master
 
 Se houver alterações locais não relacionadas com o trabalho actual,
 NÃO continuar sem perceber primeiro o que são.
 
 ---
 
-# 3. Criar uma branch para uma alteração significativa
+# 3. Sincronizar a máquina
 
-Para uma nova funcionalidade:
+Antes de começar, alinhar sempre com o servidor (o fetch é obrigatório
+antes de um reset, senão o `origin/master` local fica com um ref stale
+como já aconteceu):
 
-    git switch dev
-    git pull
-    git switch -c feature/nome-da-funcionalidade
+    git fetch --prune origin
+    git reset --hard origin/master
+    git branch -vv
 
-Exemplo:
-
-    git switch -c feature/progress-dialog
-
-Para um bug:
-
-    git switch dev
-    git pull
-    git switch -c fix/nome-do-bug
-
-Exemplo:
-
-    git switch -c fix/schedule-refresh
+Confirmar que `master` aponta para o topo do servidor
+(ex.: `[origin/master]`).
 
 ---
 
-# 4. Fazer alterações
+# 4. Criar uma branch para uma alteração
+
+Para uma nova funcionalidade:
+
+    git switch -c feat/nome-da-funcionalidade
+
+Para um bug:
+
+    git switch -c fix/nome-do-bug
+
+Exemplos reais usados:
+
+    git switch -c feat/gui-parity-filters
+    git switch -c feat/settings-mode-validation
+
+---
+
+# 5. Fazer alterações
 
 Alterar apenas os ficheiros necessários.
 
@@ -110,7 +114,7 @@ Não alterar ficheiros do Cockpit ou Timeshift do sistema.
 
 ---
 
-# 5. Testar JavaScript
+# 6. Testar JavaScript
 
 Antes de fazer commit:
 
@@ -118,9 +122,13 @@ Antes de fazer commit:
 
 Se o comando terminar sem output, a sintaxe JavaScript está correcta.
 
+Também validar o script de instalação:
+
+    sh -n install.sh
+
 ---
 
-# 6. Verificar ficheiros modificados
+# 7. Verificar ficheiros modificados
 
 Executar:
 
@@ -138,7 +146,7 @@ Nunca fazer commit sem verificar o diff.
 
 ---
 
-# 7. Testar no Cockpit
+# 8. Testar no Cockpit
 
 Recarregar o Cockpit no browser.
 
@@ -160,7 +168,7 @@ Confirmar:
 
 ---
 
-# 8. Confirmar comunicação com Timeshift
+# 9. Confirmar comunicação com Timeshift
 
 No servidor:
 
@@ -175,7 +183,7 @@ aos dados reais.
 
 ---
 
-# 9. Commit
+# 10. Commit
 
 Adicionar apenas os ficheiros pretendidos:
 
@@ -203,45 +211,87 @@ Exemplos:
 
 ---
 
-# 10. Push
+# 11. Push
 
 Depois do commit:
 
     git push -u origin nome-da-branch
 
-Exemplo:
+Exemplo real usado:
 
-    git push -u origin feature/progress-dialog
-
----
-
-# 11. Pull Request
-
-Criar Pull Request para:
-
-    dev
-
-Não fazer merge directamente em main sem revisão.
+    git push -u origin feat/settings-mode-validation
 
 ---
 
-# 12. Depois de aprovado
+# 12. Pull Request
 
-Actualizar:
+Criar Pull Request para o branch `master` (via GitHub CLI):
 
-    git switch dev
-    git pull
+    gh pr create \
+      --repo LordFader/cockpit-timeshift \
+      --base master \
+      --head nome-da-branch \
+      --title "feat: ..." \
+      --body "<!-- resumo -->"
 
-Testar novamente.
+Não fazer merge directo em `master` sem revisão.
 
-Só depois preparar uma release.
+O `master` está protegido: exige 1 review + CI `syntax-check` a passar.
 
 ---
 
-# 13. Release para versão estável
+# 13. CI
 
-A versão DEV deve estar completamente testada antes de copiar
-para a versão estável.
+Verificar o estado do CI:
+
+    gh pr checks NUMERO --repo LordFader/cockpit-timeshift
+
+O CI corre:
+
+- `node --check timeshift.js`
+- `sh -n install.sh`
+
+Aguardar `syntax-check: pass` antes de aprovar/mergear.
+
+---
+
+# 14. Aprovação e merge
+
+Aprovar:
+
+    gh pr review NUMERO --repo LordFader/cockpit-timeshift --approve
+
+Fazer merge com squash (a conta que mergeia tem de ter permissão;
+alternar conta se necessário):
+
+    gh auth switch -u LordFader
+    gh pr merge NUMERO \
+      --repo LordFader/cockpit-timeshift --squash --delete-branch
+    gh auth switch -u PGodinho
+
+Voltar sempre à conta ativa normal após o merge.
+
+---
+
+# 15. Sincronizar a máquina após o merge
+
+O fetch antes do reset é obrigatório (senão o `origin/master` local fica
+com um ref stale, como já aconteceu na máquina do LordFader):
+
+    git checkout master
+    git fetch --prune origin
+    git reset --hard origin/master
+    git pull --ff-only origin master
+    git log --oneline -3
+
+Fazer o mesmo em qualquer outra máquina de desenvolvimento.
+
+---
+
+# 16. Release para versão estável
+
+A versão DEV deve estar completamente testada e mergida em `master`
+antes de promover para a versão estável.
 
 Consultar:
 
@@ -275,11 +325,13 @@ o código sem perceber primeiro a causa.
 # CHECKLIST RÁPIDO
 
 [ ] Estou em /usr/share/cockpit/timeshift-dev
+[ ] git fetch --prune origin
+[ ] git reset --hard origin/master
 [ ] git status verificado
-[ ] branch correcta
-[ ] branch de feature/fix criada
+[ ] branch de feature/fix criada a partir de master
 [ ] alteração implementada
 [ ] node --check timeshift.js
+[ ] sh -n install.sh (se install.sh mudou)
 [ ] git diff revisto
 [ ] Cockpit Dev testado
 [ ] Create testado
@@ -288,6 +340,10 @@ o código sem perceber primeiro a causa.
 [ ] Schedule verificado
 [ ] Settings verificados
 [ ] console do browser sem erros relevantes
-[ ] git status revisto
 [ ] commit criado
 [ ] push efectuado
+[ ] PR criado para master
+[ ] CI syntax-check pass
+[ ] review + merge squash
+[ ] master local sincronizado (fetch + reset --hard + pull --ff-only)
+[ ] máquinas DEV sincronizadas

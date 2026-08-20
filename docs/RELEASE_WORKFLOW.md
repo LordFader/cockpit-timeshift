@@ -36,14 +36,17 @@ As alterações seguem:
 
 # Antes da release
 
+A release parte sempre de `master` mergido (branch→PR→CI→squash).
+Ver o `DEV_GIT_WORKFLOW.md` para o fluxo completo.
+
 Na DEV:
 
     cd /usr/share/cockpit/timeshift-dev
 
-Verificar:
+Sincronizar com o servidor (o fetch antes do reset é obrigatório):
 
-    git status
-
+    git fetch --prune origin
+    git reset --hard origin/master
     git log --oneline -5
 
 Executar:
@@ -115,7 +118,26 @@ Verificar:
 
     ls -la /usr/share/cockpit/timeshift/
 
+Confirmar que o separador no Cockpit é **Timeshift** (e não "Timeshift Dev")
+e que não existe badge `DEV` no topo da página.
+
 Depois abrir o Cockpit e testar a versão STABLE.
+
+---
+
+# Sincronizar outras máquinas
+
+Depois de a release estar em `master`, cada máquina de desenvolvimento
+deve alinhar com o servidor:
+
+    cd /usr/share/cockpit/timeshift-dev
+    git fetch --prune origin
+    git reset --hard origin/master
+    git branch -vv
+
+> O `git fetch` antes do `reset --hard` é obrigatório: sem ele o
+> `origin/master` local fica stale e o reset aponta para um commit antigo
+> (ex.: `cb45021` em vez do topo real).
 
 ---
 
