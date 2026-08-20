@@ -24,6 +24,8 @@ Use this installation for UI changes, bug fixes and experimental features.
 4. Update the changelog and version.
 5. Promote the tested code to the stable branch/release via `install.sh`
    (it strips the DEV markers: badge, DEV title and `Timeshift Dev` label).
+   - **i18n:** regenerate translation bundles with `node scripts/po2js.js`
+     before running `install.sh` if `.po` files changed.
 6. Create a Git tag such as `v0.2.0-beta`.
 
 ## DEV markers

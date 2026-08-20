@@ -4,7 +4,7 @@ A lightweight Cockpit web interface for managing Timeshift system snapshots.
 
 ## Version
 
-**v0.1.0-beta** — first publicly released functional beta.
+**v0.1.1-beta** — second publicly released beta with i18n (pt_PT).
 
 ## Features
 
@@ -16,6 +16,7 @@ A lightweight Cockpit web interface for managing Timeshift system snapshots.
 - Live operation feedback and elapsed time
 - Timeshift device information
 - systemd-based scheduling interface
+- Full Portuguese (pt_PT) translation via Cockpit gettext
 
 ## Current status
 

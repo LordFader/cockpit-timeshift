@@ -292,6 +292,8 @@ O `install.sh` da DEV gera a build de produção a partir dos ficheiros DEV,
 removendo os marcadores exclusivos do ambiente de desenvolvimento:
 
 ```bash
+# Regenerar bundles i18n se alterou ficheiros .po
+node scripts/po2js.js
 sudo sh /usr/share/cockpit/timeshift-dev/install.sh
 ```
 
