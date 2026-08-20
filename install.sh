@@ -30,6 +30,12 @@ awk '
 ' "$SRC/timeshift.css" > "$TMP/timeshift.css"
 
 mkdir -p "$DEST"
+
+# Remove the legacy single po.js bundle: Cockpit only serves po.js properly
+# from per-language po.<lang>.js files, and a stale physical po.js would be
+# served verbatim and break translations.
+rm -f "$DEST/po.js"
+
 install -o root -g root -m 0644 "$TMP/manifest.json" "$DEST/manifest.json"
 install -o root -g root -m 0644 "$TMP/index.html" "$DEST/index.html"
 install -o root -g root -m 0644 "$SRC/parsers.js" "$DEST/parsers.js"
