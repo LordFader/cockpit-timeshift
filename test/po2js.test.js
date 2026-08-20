@@ -2,7 +2,7 @@
 
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { parsePo, pluralExpr, buildLocaleData } = require("../scripts/po2js.js");
+const { parsePo, pluralExpr, buildLocaleData, localeFileNames } = require("../scripts/po2js.js");
 
 const SAMPLE_PO = `msgid ""
 msgstr ""
@@ -66,4 +66,10 @@ test("buildLocaleData: emits po2json data with header and entries", () => {
   assert.match(data, /"language-direction": "ltr"/);
   assert.match(data, /"Snapshots": \[\n  null,\n  "Instantâneos"\n \]/);
   assert.match(data, /"restore point available": \[null,"ponto de restauro disponível","pontos de restauro disponíveis"\]/);
+});
+
+test("localeFileNames: covers base code and pt_BR alias for the pt family", () => {
+  assert.deepEqual(localeFileNames("pt_PT"), ["pt_PT", "pt", "pt_BR"]);
+  assert.deepEqual(localeFileNames("de"), ["de"]);
+  assert.deepEqual(localeFileNames("zh_CN"), ["zh_CN", "zh"]);
 });

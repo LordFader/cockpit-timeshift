@@ -30,7 +30,8 @@ jobs:
             { if (inblock) { if ($0 ~ /^}/) inblock=0; next } }
             { print }
           ' timeshift.css > dist/timeshift.css
-          cp parsers.js po.js timeshift.js dist/
+          cp parsers.js timeshift.js dist/
+          cp po.*.js dist/
 
       - name: Validate production manifest
         run: node scripts/validate-manifest.js dist/manifest.json

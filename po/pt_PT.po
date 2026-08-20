@@ -383,10 +383,9 @@ msgid "System protected"
 msgstr "Sistema protegido"
 
 msgid "$0 restore point available"
-msgstr "$0 ponto de restauro disponível"
-
-msgid "$0 restore points available"
-msgstr "$0 pontos de restauro disponíveis"
+msgid_plural "$0 restore points available"
+msgstr[0] "$0 ponto de restauro disponível"
+msgstr[1] "$0 pontos de restauro disponíveis"
 
 msgid "Enabled"
 msgstr "Ativado"
@@ -495,10 +494,9 @@ msgid "Timeshift returned an error"
 msgstr "O Timeshift devolveu um erro"
 
 msgid "$0 live output update"
-msgstr "$0 atualização de saída em direto"
-
-msgid "$0 live output updates"
-msgstr "$0 atualizações de saída em direto"
+msgid_plural "$0 live output updates"
+msgstr[0] "$0 atualização de saída em direto"
+msgstr[1] "$0 atualizações de saída em direto"
 
 msgid "Mounting snapshot storage"
 msgstr "A montar o armazenamento de instantâneos"
