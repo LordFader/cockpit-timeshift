@@ -8,7 +8,7 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 
 **Key files:**
 - `index.html` — Cockpit app shell; UI structure, loads `timeshift.js` and `timeshift.css`, registers with Cockpit via `/app` manifest endpoint.
-- `timeshift.js` — Main application logic (709 lines, strict mode, module pattern). State management, DOM manipulation, Cockpit API calls.
+- `timeshift.js` — Main application logic (~1000 lines, strict mode, module pattern). State management, DOM manipulation, Cockpit API calls.
 - `timeshift.css` — Stylesheet with CSS custom properties (theming variables) and BEM-like class naming.
 - `manifest.json` — Cockpit app manifest; entry point, title, icon, shortcut keys.
 - `install.sh` — Installation script (requires root); copies 4 source files to `/usr/share/cockpit/timeshift/` (stable) or `/usr/share/cockpit/timeshift-dev/` (dev).
@@ -51,7 +51,7 @@ Expected: no output and exit code 0.
 - **Strict mode**: `"use strict"` at the very top. Applies to the entire file.
 - **Module pattern**: Self-invoking anonymous function `(() => { ... })()`. All logic lives inside this closure.
 - **Naming conventions**:
-  - Constants: `UPPER_SNAKE_CASE` (`TS = "/usr/bin/timeshift"`, `TIMER = "cockpit-timeshift.timer"`, `SERVICE = "cockpit-timeshift.service"`)
+  - Constants: `UPPER_SNAKE_CASE` (`TS = "/usr/bin/timeshift"`, `TIMER = "timeshift.timer"`, `SERVICE = "timeshift.service"`; legacy `cockpit-timeshift.*` disabled on save)
   - Functions: `camelCase` (`runSnapshotOperation`, `refreshTimeshift`, `createSnapshot`, `deleteSnapshot`)
   - State object properties: `camelCase` (`snapshots`, `scheduleEnabled`, `timerActive`, `selectedSnapshot`)
   - DOM helpers: `$` prefix for ID selectors (`$('#snapshotSearch')`, `$('snapshotTable')`)

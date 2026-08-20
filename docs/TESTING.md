@@ -76,6 +76,11 @@ Open:
 [ ] Current timer state is detected
 [ ] Enable works
 [ ] Disable works
+[ ] Levels (hourly/daily/weekly/monthly/boot) toggle correctly
+[ ] Retention count dropdowns show 1–20 and persist selection
+[ ] Recommended defaults shown when config has no count value
+[ ] Legacy `cockpit-timeshift.timer` is disabled on save
+[ ] `timeshift.timer`/`timeshift.service` written with `--check --scripted`
 [ ] Timer state refreshes
 [ ] Next execution is displayed
 
@@ -83,10 +88,15 @@ Open:
 
 ## Settings
 
-[ ] Timeshift executable detected
+[ ] Mode dropdown shows RSYNC/BTRFS
+[ ] BTRFS option disabled with hint when system is not on BTRFS
+[ ] BTRFS save rejected via toast when unavailable
+[ ] Changing mode writes `btrfs_mode` and refreshes
+[ ] Executable indicator shows "✔ found and executable"
 [ ] Version detected
-[ ] Mode detected
 [ ] Device detected
+[ ] Excluded items load from config and save back
+[ ] Device list scans via lsblk and shows current selection
 
 ---
 

@@ -134,4 +134,7 @@ See `DEV_INSTALL.md` and `DEVELOPMENT.md`.
 See `docs/PROCEDURES.md` for the canonical development and promotion
 procedures (DEV → Stable), and `docs/DEV_GIT_WORKFLOW.md` for the Git
 workflow (branch → PR → CI → squash → machine sync).
+
+See `docs/ROADMAP.md` for the proposed professionalization roadmap
+(tests, CI, releases, linting, i18n).
 updated
