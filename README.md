@@ -130,4 +130,8 @@ under `/usr/share/cockpit/timeshift-dev` and leaves the stable Timeshift
 application untouched.
 
 See `DEV_INSTALL.md` and `DEVELOPMENT.md`.
+
+See `docs/PROCEDURES.md` for the canonical development and promotion
+procedures (DEV → Stable), and `docs/DEV_GIT_WORKFLOW.md` for the Git
+workflow (branch → PR → CI → squash → machine sync).
 updated
