@@ -485,7 +485,9 @@
     return { enabled, active, next };
   }
 
-  async function refreshSchedule() {
+  const RECOMMENDED_COUNTS = { hourly: "2", daily: "5", weekly: "3", monthly: "2", boot: "5" };
+
+async function refreshSchedule() {
     const cfg = (await readTimeshiftConfig()) || {};
     const levels = readScheduleLevels(cfg);
 
@@ -497,7 +499,7 @@
           for (let n = 1; n <= 20; n++) count.add(new Option(String(n), String(n)));
           count.dataset.populated = "1";
         }
-        count.value = String(cfg[`count_${lvl}`] ?? (lvl === "hourly" ? "2" : lvl === "boot" ? "5" : "3"));
+        count.value = String(cfg[`count_${lvl}`] ?? RECOMMENDED_COUNTS[lvl]);
       }
     }
 
