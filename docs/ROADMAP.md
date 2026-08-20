@@ -5,7 +5,9 @@
 >
 > Estado atual: Fases 1–3 de paridade GUI concluídas + hardening de Settings
 > (mode BTRFS/RSYNC, validação executável, retention dropdowns, defaults
-> recomendados). Master no `0a2f8b7` (#8).
+> recomendados). R#1 (testes parsers), R#2 (CI + manifest + artefacto),
+> R#3 (tag `v0.1.0-beta` + Release) e R#4 (ESLint) concluídos. Master no
+> `4ef5c9a` (#12); release `v0.1.0-beta` publicada.
 
 ---
 
@@ -15,44 +17,41 @@ Auditoria feita a 2026-08-20:
 
 - App em vanilla JS/HTML/CSS, sem build system nem package.json.
 - CI atual: `node --check timeshift.js` + `sh -n install.sh` (push).
-- **Zero testes automatizados** (só `node --check` + testes manuais).
+- **Zero testes automatizados** ~~(resolvido — R#1: `test/parsers.test.js`)~~.
 - **Sem i18n** (`no po/ dir`), `index.html` com `lang="en"` fixo.
-- **Sem ESLint/Prettier**.
-- **Sem tags/releases Git** (`v0.1.0-beta` nunca foi tagado).
-- `git-backup.sh` está versionado na raiz (marcado opcional no .gitignore).
+- **Sem ESLint/Prettier** ~~(resolvido — R#4: `eslint.config.js` na CI)~~.
+- **Sem tags/releases Git** ~~(resolvido — R#3: tag `v0.1.0-beta` + Release)~~.
+- `git-backup.sh` está em `tools/` (marcado opcional no .gitignore).
 
 ---
 
 ## Recomendações por prioridade
 
-### 1. Testes unitários dos parsers (rede de segurança) — recomendado primeiro
+### 1. Testes unitários dos parsers (rede de segurança) — ✅ concluído (PR #10)
 
-Hoje não há testes. Os parsers puros (`parseList`, `parseListHeader`,
-flattening do `lsblk`, classificação Scheduled/On-demand) são ideais para
-testes unitários **sem precisar de servidor/Cockpit**.
+`test/parsers.test.js` (Node `node:test`, 13 testes) cobre `parseList`,
+`parseHeader`, `readScheduleLevels`, `flattenDevices` e helpers; parsers
+extraídos para `parsers.js` partilhado (browser + Node).
 
-- Formato: JS simples com runner leve (ex.: Node `node:test`) ou pequeno
-  script que corre os parsers com inputs fixos. Sem instalar dependências.
-- Ganho: evitar regressões ao mexer na UI; passível de correr no CI.
-
-### 2. CI mais sólida
+### 2. CI mais sólida — ✅ concluído (PR #12)
 
 No `.github/workflows/ci.yml`:
 
-- Correr os testes unitários do ponto 1.
-- Validar o `manifest.json` (schema mínimo / JSON válido + campos obrigatórios).
-- Gerar artefacto de release (zip/tar com os 4 ficheiros) quando se fizer tag.
+- Testes unitários correm no CI.
+- `scripts/validate-manifest.js` valida o `manifest.json` (dev e build de
+  produção) no CI.
+- `.github/workflows/release.yml` gera artefacto (tar.gz) + Release GitHub
+  em tags `v*`.
 
-### 3. Versionamento real (tags + releases GitHub)
+### 3. Versionamento real (tags + releases GitHub) — ✅ concluído
 
-- `docs/VERSIONING.md` já define a convenção. Falta efetivamente criar a tag
-  `v0.1.0-beta` e publicar uma Release no GitHub (com o artefacto do ponto 2).
-- Manter `CHANGELOG.md` atualizado por release (secção `## vX.Y.Z`).
+- Tag `v0.1.0-beta` criada e Release publicada (artefacto de produção).
+- `CHANGELOG.md` mantém secções por release (`## vX.Y.Z`).
 
-### 4. ESLint / Prettier (consistência de código)
+### 4. ESLint / Prettier (consistência de código) — ✅ concluído (PR #11)
 
-- Config mínima (`eslint.config.js`), registar como script e incluir no CI.
-- Sem build system: ESLint roda sobre os ficheiros estáticos diretamente.
+- `eslint.config.js` (flat config), `npm run lint`, job de lint na CI.
+- Prettier não configurado (fora de âmbito por agora).
 
 ### 5. i18n / traduções
 
@@ -61,20 +60,20 @@ No `.github/workflows/ci.yml`:
 - Alargar `lang` dinâmico no `index.html` em vez de `lang="en"` fixo.
 - Primeiro alvo: Português (utilizador principal).
 
-### 6. Housekeeping leve
+### 6. Housekeeping leve — ✅ concluído
 
-- Migrar `git-backup.sh` para `tools/` (ou remover) — hoje está na raiz.
-- Adicionar `CONTRIBUTING.md` apontando para `docs/PROCEDURES.md`.
+- `git-backup.sh` migrado para `tools/`.
+- `CONTRIBUTING.md` adicionado (aponta para `docs/PROCEDURES.md`).
 
 ---
 
 ## Ordem de execução sugerida (maior valor, menor risco)
 
-1. Testes unitários dos parsers (introduz teste na CI junto com `node --check`).
-2. ESLint mínimo na CI.
-3. Tag `v0.1.0-beta` + Release GitHub com artefacto.
-4. i18n (PT primeiro).
-5. Housekeeping (`tools/`, `CONTRIBUTING.md`).
+1. ~~Testes unitários dos parsers~~ ✅
+2. ~~ESLint mínimo na CI~~ ✅
+3. ~~Tag `v0.1.0-beta` + Release GitHub com artefacto~~ ✅
+4. **i18n (PT primeiro).** ← próximo
+5. ~~Housekeeping (`tools/`, `CONTRIBUTING.md`)~~ ✅
 
 ---
 

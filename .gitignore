@@ -21,4 +21,4 @@ Thumbs.db
 node_modules/
 
 # Local backup script (optional, keep if you want it versioned)
-# git-backup.sh
+# tools/git-backup.sh
