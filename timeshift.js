@@ -18,6 +18,8 @@
     parseHeader
   } = (window.TSParsers || globalThis.TSParsers || {});
 
+  const _ = cockpit.gettext;
+
   const state = {
     snapshots: [],
     version: "--",
@@ -155,7 +157,7 @@
     host.textContent = "";
 
     if (!state.devicesList.length) {
-      host.innerHTML = `<p class="muted">No eligible Linux devices found (ext4/xfs/btrfs). Press Refresh to rescan.</p>`;
+      host.innerHTML = `<p class="muted">${_("No eligible Linux devices found (ext4/xfs/btrfs). Press Refresh to rescan.")}</p>`;
       return;
     }
 
@@ -165,14 +167,14 @@
       btn.type = "button";
       btn.className = `device-item${selected ? " selected" : ""}`;
       btn.dataset.device = d.device;
-      btn.title = selected ? "Current backup device" : "Set as backup device";
+      btn.title = selected ? _("Current backup device") : _("Set as backup device");
       btn.innerHTML = `
         <span class="device-radio">${selected ? "●" : "○"}</span>
         <span class="device-main">
           <strong>${esc(d.device)}</strong>
           <em>${esc(humanBytes(d.size))} · ${esc(d.fstype)}${d.label ? ` · ${esc(d.label)}` : ""}${d.uuid ? ` · ${esc(shortUuid(d.uuid))}` : ""}</em>
         </span>
-        <span class="device-mount">${d.mounts.length ? "mounted" : "not mounted"}</span>
+        <span class="device-mount">${d.mounts.length ? _("mounted") : _("not mounted")}</span>
       `;
       host.appendChild(btn);
     }
@@ -181,7 +183,7 @@
   async function selectDevice(device) {
     const dev = state.devicesList.find(d => d.device === device);
     if (!dev || !dev.uuid) {
-      toast("Device has no UUID and cannot be used by Timeshift.", true);
+      toast(_("Device has no UUID and cannot be used by Timeshift."), true);
       return;
     }
     const cfg = (await readTimeshiftConfig()) || {};
@@ -190,7 +192,7 @@
     cfg.do_first_run = "false";
     await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
     state.backupUuid = dev.uuid;
-    toast(`Backup device set to ${dev.device}.`);
+    toast(cockpit.format(_("Backup device set to $0."), dev.device));
     await refresh();
   }
 
@@ -215,8 +217,8 @@
     cfg.exclude = list;
     await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
     state.excludes = list;
-    $("excludesSaved").textContent = "Exclusions saved.";
-    toast("Exclusion list updated.");
+    $("excludesSaved").textContent = _("Exclusions saved.");
+    toast(_("Exclusion list updated."));
   }
 
   async function snapshotSize(id) {
@@ -269,8 +271,8 @@
         <td><span class="badge success">${esc(snapshot.status)}</span></td>
         <td>
           <div class="table-actions">
-            <button class="small-button" data-action="restore" data-id="${esc(snapshot.id)}">Restore</button>
-            <button class="small-button danger" data-action="delete" data-id="${esc(snapshot.id)}">Delete</button>
+            <button class="small-button" data-action="restore" data-id="${esc(snapshot.id)}">${_("Restore")}</button>
+            <button class="small-button danger" data-action="delete" data-id="${esc(snapshot.id)}">${_("Delete")}</button>
           </div>
         </td>
       </tr>
@@ -285,7 +287,7 @@
     if (recent) {
       recent.innerHTML = state.snapshots.length
         ? state.snapshots.slice(0, 5).map(row).join("")
-        : `<tr><td colspan="6" class="muted">No snapshots detected.</td></tr>`;
+        : `<tr><td colspan="6" class="muted">${_("No snapshots detected.")}</td></tr>`;
     }
 
     if (table) {
@@ -302,9 +304,9 @@
     $("lastSnapshot").textContent = latest ? `${latest.date} ${latest.time}` : "—";
     $("lastSnapshotType").textContent = latest ? latest.type : "—";
     $("diskFree").textContent = state.freeSpace;
-    $("diskMeta").textContent = state.device !== "--" ? state.device : "snapshot storage";
+    $("diskMeta").textContent = state.device !== "--" ? state.device : _("snapshot storage");
     $("nextSnapshot").textContent = state.nextSnapshot;
-    $("nextSnapshotMeta").textContent = state.scheduleEnabled ? "systemd timer" : "not scheduled";
+    $("nextSnapshotMeta").textContent = state.scheduleEnabled ? _("systemd timer") : _("not scheduled");
   }
 
   function renderSettings() {
@@ -318,12 +320,14 @@
     const modeHint = modeSelect?.closest("label")?.querySelector(".mode-hint");
     if (modeHint) {
       modeHint.textContent = state.btrfsAvailable
-        ? "RSYNC works on most filesystems; BTRFS uses native snapshots (available on this system)."
-        : "RSYNC works on most filesystems. BTRFS is unavailable — the system is not on a BTRFS volume.";
+        ? _("RSYNC works on most filesystems; BTRFS uses native snapshots (available on this system).")
+        : _("RSYNC works on most filesystems. BTRFS is unavailable — the system is not on a BTRFS volume.");
     }
 
-    $("storageInfo").textContent =
-      `Device: ${state.device} · UUID: ${state.uuid} · Mode: ${state.mode} · Status: ${state.timeshiftStatus}`;
+    $("storageInfo").textContent = cockpit.format(
+      _("Device: $0 · UUID: $1 · Mode: $2 · Status: $3"),
+      state.device, state.uuid, state.mode, state.timeshiftStatus
+    );
 
     $("devices").textContent = state.devices;
     renderDevices();
@@ -340,46 +344,47 @@
     if (state.configured === false) {
       banner?.classList.add("warning");
       icon.textContent = "!";
-      status.textContent = "Timeshift not configured";
-      sub.textContent = "No backup device selected. Configure Timeshift to enable protection.";
+      status.textContent = _("Timeshift not configured");
+      sub.textContent = _("No backup device selected. Configure Timeshift to enable protection.");
     } else if (state.timeshiftStatus !== "--" && state.timeshiftStatus !== "OK") {
       banner?.classList.add("error");
       icon.textContent = "!";
-      status.textContent = "Timeshift reports a problem";
-      sub.textContent = `Timeshift status: ${state.timeshiftStatus}`;
+      status.textContent = _("Timeshift reports a problem");
+      sub.textContent = cockpit.format(_("Timeshift status: $0"), state.timeshiftStatus);
     } else if (!state.snapshots.length) {
       banner?.classList.add("warning");
       icon.textContent = "!";
-      status.textContent = "No snapshots detected";
-      sub.textContent = "Timeshift is installed, but no restore points were found.";
+      status.textContent = _("No snapshots detected");
+      sub.textContent = _("Timeshift is installed, but no restore points were found.");
     } else {
       icon.textContent = "✓";
-      status.textContent = "System protected";
-      sub.textContent = `${state.snapshots.length} restore point${state.snapshots.length === 1 ? "" : "s"} available.`;
+      status.textContent = _("System protected");
+      const n = state.snapshots.length;
+      sub.textContent = cockpit.format(cockpit.ngettext("$0 restore point available", "$0 restore points available", n), n);
     }
 
     const badge = $("scheduleBadge");
     badge.textContent = state.timerActive
-      ? "Scheduled"
+      ? _("Scheduled")
       : state.scheduleEnabled
-        ? "Enabled"
-        : "Manual only";
+        ? _("Enabled")
+        : _("Manual only");
 
     badge.className = `badge ${state.timerActive ? "success" : ""}`;
   }
 
   async function refreshTimeshift() {
     const version = await run(["--version"]);
-    state.version = String(version).trim().split(/\r?\n/)[0] || "Detected";
+    state.version = String(version).trim().split(/\r?\n/)[0] || _("Detected");
 
     const list = await run(["--list"]);
     Object.assign(state, parseHeader(list));
     state.snapshots = parseList(list);
 
     try {
-      state.devices = String(await run(["--list-devices"])).trim() || "No device information returned.";
+      state.devices = String(await run(["--list-devices"])).trim() || _("No device information returned.");
     } catch {
-      state.devices = "Unable to load device information.";
+      state.devices = _("Unable to load device information.");
     }
   }
 
@@ -420,19 +425,19 @@ async function refreshSchedule() {
 
     const t = await getTimerState();
     state.timerActive = t.active === "active";
-    state.nextSnapshot = t.next || (state.scheduleEnabled ? "Waiting" : "Not scheduled");
+    state.nextSnapshot = t.next || (state.scheduleEnabled ? _("Waiting") : _("Not scheduled"));
 
     $("timerStatus").textContent = [
-      `enabled: ${t.enabled}`,
-      `active: ${t.active}`,
-      `next: ${t.next || "--"}`,
-      `unit: ${TIMER}`,
-      `executable: ${TS}`
+      cockpit.format(_("enabled: $0"), t.enabled),
+      cockpit.format(_("active: $0"), t.active),
+      cockpit.format(_("next: $0"), t.next || "--"),
+      cockpit.format(_("unit: $0"), TIMER),
+      cockpit.format(_("executable: $0"), TS)
     ].join("\n");
 
     $("scheduleBadge").textContent =
-      state.timerActive ? "Scheduled" :
-      state.scheduleEnabled ? "Enabled" : "Manual only";
+      state.timerActive ? _("Scheduled") :
+      state.scheduleEnabled ? _("Enabled") : _("Manual only");
 
     $("scheduleBadge").className =
       `badge ${state.timerActive ? "success" : ""}`;
@@ -443,11 +448,11 @@ async function refreshSchedule() {
     if (!el) return;
     try {
       await cockpit.spawn(["sh", "-c", `test -x ${TS}`], { superuser: "try" });
-      el.textContent = "✔ found and executable";
+      el.textContent = _("✔ found and executable");
       el.classList.remove("bad");
       el.classList.add("good");
     } catch {
-      el.textContent = "✘ not found or not executable";
+      el.textContent = _("✘ not found or not executable");
       el.classList.remove("good");
       el.classList.add("bad");
     }
@@ -455,7 +460,7 @@ async function refreshSchedule() {
 
   async function refresh() {
     clearError();
-    $("connectionText").textContent = "Refreshing…";
+    $("connectionText").textContent = _("Refreshing…");
 
     try {
       await refreshTimeshift();
@@ -472,10 +477,10 @@ async function refreshSchedule() {
       renderStats();
       renderProtection();
 
-      $("connectionText").textContent = "Connected";
+      $("connectionText").textContent = _("Connected");
       $("connectionDot").classList.remove("offline");
     } catch (error) {
-      $("connectionText").textContent = "Error";
+      $("connectionText").textContent = _("Error");
       $("connectionDot").classList.add("offline");
 
       const configured = await timeshiftIsConfigured();
@@ -487,11 +492,11 @@ async function refreshSchedule() {
       renderProtection();
 
       if (looksUnconfigured) {
-        setError(`${TS} is installed but has no backup device configured. Open the Timeshift app ("sudo timeshift-gtk") to select a backup device, then refresh.`);
-        toast("Timeshift is not configured to use a backup device.", true);
+        setError(cockpit.format(_("$0 is installed but has no backup device configured. Open the Timeshift app (\"sudo timeshift-gtk\") to select a backup device, then refresh."), TS));
+        toast(_("Timeshift is not configured to use a backup device."), true);
       } else {
-        setError(`Unable to communicate with ${TS}. ${msg}`);
-        toast("Timeshift communication failed.", true);
+        setError(cockpit.format(_("Unable to communicate with $0. $1"), TS, msg));
+        toast(_("Timeshift communication failed."), true);
       }
     }
   }
@@ -508,10 +513,10 @@ async function refreshSchedule() {
     });
 
     const titles = {
-      overview: ["Timeshift", "Create, inspect and restore system snapshots."],
-      snapshots: ["Snapshots", "Browse and manage available restore points."],
-      schedule: ["Schedule", "Configure automatic system snapshots."],
-      settings: ["Settings", "Inspect Timeshift integration and storage."]
+      overview: [_("Timeshift"), _("Create, inspect and restore system snapshots.")],
+      snapshots: [_("Snapshots"), _("Browse and manage available restore points.")],
+      schedule: [_("Schedule"), _("Configure automatic system snapshots.")],
+      settings: [_("Settings"), _("Inspect Timeshift integration and storage.")]
     };
 
     const title = titles[view];
@@ -538,7 +543,7 @@ async function refreshSchedule() {
     $("modalTitle").textContent = title;
     $("modalBody").innerHTML = `<div class="modal-body">${body}</div>`;
     $("modalActions").innerHTML = `
-      <button class="secondary-button" id="cancelModal" type="button">Cancel</button>
+      <button class="secondary-button" id="cancelModal" type="button">${_("Cancel")}</button>
       <button class="${danger ? "danger-button" : "primary-button"}" id="confirmModal" type="button">${esc(confirmText)}</button>
     `;
     $("modalBackdrop").classList.remove("hidden");
@@ -558,16 +563,16 @@ async function refreshSchedule() {
     };
   }
 
-  function resetProgressUi(title = "Working…") {
+  function resetProgressUi(title = _("Working…")) {
     const area = $("progressArea");
     if (!area) return;
     area.classList.add("hidden", "indeterminate");
     $("progressTitle").textContent = title;
-    $("progressPhase").textContent = "Preparing Timeshift";
+    $("progressPhase").textContent = _("Preparing Timeshift");
     $("progressPercent").textContent = "—";
     $("progressBar").style.width = "0%";
     $("progressElapsed").textContent = "00:00";
-    $("progressCounter").textContent = "Waiting for output…";
+    $("progressCounter").textContent = _("Waiting for output…");
     $("progressLog").textContent = "";
     operationLines = 0;
   }
@@ -614,12 +619,12 @@ async function refreshSchedule() {
       }
 
       const lower = line.toLowerCase();
-      let phase = "Creating snapshot";
-      if (lower.includes("mount")) phase = "Mounting snapshot storage";
-      else if (lower.includes("rsync") || lower.includes("copy")) phase = "Copying system data";
-      else if (lower.includes("creating") || lower.includes("snapshot")) phase = "Creating snapshot";
-      else if (lower.includes("boot")) phase = "Updating boot files";
-      else if (lower.includes("unmount")) phase = "Unmounting storage";
+      let phase = _("Creating snapshot");
+      if (lower.includes("mount")) phase = _("Mounting snapshot storage");
+      else if (lower.includes("rsync") || lower.includes("copy")) phase = _("Copying system data");
+      else if (lower.includes("creating") || lower.includes("snapshot")) phase = _("Creating snapshot");
+      else if (lower.includes("boot")) phase = _("Updating boot files");
+      else if (lower.includes("unmount")) phase = _("Unmounting storage");
       $("progressPhase").textContent = phase;
 
       const log = $("progressLog");
@@ -630,20 +635,23 @@ async function refreshSchedule() {
         log.scrollTop = log.scrollHeight;
       }
     }
-    $("progressCounter").textContent = `${operationLines} live output update${operationLines === 1 ? "" : "s"}`;
+    $("progressCounter").textContent = cockpit.format(
+      cockpit.ngettext("$0 live output update", "$0 live output updates", operationLines),
+      operationLines
+    );
   }
 
-  function finishOperation(success, message = "", successMessage = "Operation completed successfully") {
+  function finishOperation(success, message = "", successMessage = _("Operation completed successfully")) {
     if (success) {
       $("progressArea")?.classList.remove("indeterminate");
       $("progressBar").style.width = "100%";
       $("progressPercent").textContent = "100%";
-      $("progressPhase").textContent = "Snapshot completed";
+      $("progressPhase").textContent = _("Snapshot completed");
       $("progressCounter").textContent = successMessage;
     } else {
       $("progressArea")?.classList.remove("indeterminate");
-      $("progressPhase").textContent = "Operation failed";
-      $("progressCounter").textContent = message || "Timeshift returned an error";
+      $("progressPhase").textContent = _("Operation failed");
+      $("progressCounter").textContent = message || _("Timeshift returned an error");
     }
     stopOperationUi();
   }
@@ -671,20 +679,20 @@ async function refreshSchedule() {
 
   function createSnapshot() {
     openModal(
-      "Create snapshot",
+      _("Create snapshot"),
       `
         <div class="form-grid">
-          <label class="full">Comment
-            <input class="input" id="newComment" value="Manual system snapshot" maxlength="120">
+          <label class="full">${_("Comment")}
+            <input class="input" id="newComment" value="${_("Manual system snapshot")}" maxlength="120">
           </label>
         </div>
-        <p style="margin-top:14px">Timeshift will create a new restore point using its configured storage.</p>
+        <p style="margin-top:14px">${_("Timeshift will create a new restore point using its configured storage.")}</p>
       `,
-      "Create snapshot",
+      _("Create snapshot"),
       async () => {
-        const comment = $("newComment").value.trim() || "Manual system snapshot";
-        await runSnapshotOperation(["--create", "--comments", comment, "--scripted"], "Creating snapshot");
-        toast("Snapshot created successfully.");
+        const comment = $("newComment").value.trim() || _("Manual system snapshot");
+        await runSnapshotOperation(["--create", "--comments", comment, "--scripted"], _("Creating snapshot"));
+        toast(_("Snapshot created successfully."));
         await refresh();
       }
     );
@@ -699,23 +707,23 @@ async function refreshSchedule() {
        </ul>`
       : "";
     openModal(
-      "Restore snapshot",
-      `<p>Restore the system to snapshot <strong>${esc(id)}</strong>?</p>
+      _("Restore snapshot"),
+      `<p>${cockpit.format(_("Restore the system to snapshot $0?"), `<strong>${esc(id)}</strong>`)}</p>
        ${meta}
        <div class="restore-notes">
-         <p><strong>What will happen</strong></p>
+         <p><strong>${_("What will happen")}</strong></p>
          <ul>
-           <li>System files and settings are restored to the state of this snapshot.</li>
-           <li>Boot files and EFI are handled automatically by Timeshift.</li>
-           <li>User data under <code>/home</code> is excluded by default and remains untouched.</li>
-           <li>Timeshift reinstalls the bootloader automatically if needed.</li>
+           <li>${_("System files and settings are restored to the state of this snapshot.")}</li>
+           <li>${_("Boot files and EFI are handled automatically by Timeshift.")}</li>
+           <li>${_("User data under /home is excluded by default and remains untouched.")}</li>
+           <li>${_("Timeshift reinstalls the bootloader automatically if needed.")}</li>
          </ul>
        </div>
-       <p style="margin-top:12px;color:var(--warning)">This changes the system and requires a reboot to complete.</p>`,
-      "Restore",
+       <p style="margin-top:12px;color:var(--warning)">${_("This changes the system and requires a reboot to complete.")}</p>`,
+      _("Restore"),
       async () => {
-        await runSnapshotOperation(["--restore", "--snapshot", id, "--scripted"], "Restoring snapshot");
-        toast("Restore command completed.");
+        await runSnapshotOperation(["--restore", "--snapshot", id, "--scripted"], _("Restoring snapshot"));
+        toast(_("Restore command completed."));
         await refresh();
       },
       true
@@ -724,13 +732,13 @@ async function refreshSchedule() {
 
   function deleteSnapshot(id) {
     openModal(
-      "Delete snapshot",
-      `<p>Delete <strong>${esc(id)}</strong>?</p>
-       <p style="margin-top:12px">This cannot be undone.</p>`,
-      "Delete",
+      _("Delete snapshot"),
+      `<p>${cockpit.format(_("Delete $0?"), `<strong>${esc(id)}</strong>`)}</p>
+       <p style="margin-top:12px">${_("This cannot be undone.")}</p>`,
+      _("Delete"),
       async () => {
-        await runSnapshotOperation(["--delete", "--snapshot", id, "--scripted"], "Deleting snapshot");
-        toast("Snapshot deleted successfully.");
+        await runSnapshotOperation(["--delete", "--snapshot", id, "--scripted"], _("Deleting snapshot"));
+        toast(_("Snapshot deleted successfully."));
         await refresh();
       },
       true
@@ -739,13 +747,13 @@ async function refreshSchedule() {
 
   function deleteAll() {
     openModal(
-      "Delete all snapshots",
-      `<p>Delete every Timeshift snapshot?</p>
-       <p style="margin-top:12px;color:var(--danger)">This action cannot be undone.</p>`,
-      "Delete all",
+      _("Delete all snapshots"),
+      `<p>${_("Delete every Timeshift snapshot?")}</p>
+       <p style="margin-top:12px;color:var(--danger)">${_("This action cannot be undone.")}</p>`,
+      _("Delete all"),
       async () => {
-        await runSnapshotOperation(["--delete-all", "--scripted"], "Deleting all snapshots");
-        toast("All snapshots deleted successfully.");
+        await runSnapshotOperation(["--delete-all", "--scripted"], _("Deleting all snapshots"));
+        toast(_("All snapshots deleted successfully."));
         await refresh();
       },
       true
@@ -767,7 +775,7 @@ async function refreshSchedule() {
     }
 
     if (enabled && !onLevels.size) {
-      toast("Enable at least one snapshot level.", true);
+      toast(_("Enable at least one snapshot level."), true);
       return;
     }
 
@@ -801,15 +809,15 @@ async function refreshSchedule() {
       await sys(["daemon-reload"]);
       await sys(["enable", "--now", TIMER]);
       try { await sys(["disable", "--now", LEGACY_TIMER]); } catch {}
-      $("scheduleSaved").textContent = "Schedule enabled (timeshift checks hourly, snapshots when a level is due).";
-      toast("Timeshift native scheduling enabled.");
+      $("scheduleSaved").textContent = _("Schedule enabled (timeshift checks hourly, snapshots when a level is due).");
+      toast(_("Timeshift native scheduling enabled."));
     } else {
       try { await sys(["disable", "--now", TIMER]); } catch {}
       try { await sys(["disable", "--now", LEGACY_TIMER]); } catch {}
       state.scheduleEnabled = false;
       state.timerActive = false;
-      $("scheduleSaved").textContent = "Schedule disabled.";
-      toast("Schedule disabled.");
+      $("scheduleSaved").textContent = _("Schedule disabled.");
+      toast(_("Schedule disabled."));
     }
 
     await refreshSchedule();
@@ -832,8 +840,8 @@ async function refreshSchedule() {
       try {
         await saveSchedule();
       } catch (error) {
-        setError(`Could not configure systemd: ${error?.message || String(error)}`);
-        toast("Schedule configuration failed.", true);
+        setError(cockpit.format(_("Could not configure systemd: $0"), error?.message || String(error)));
+        toast(_("Schedule configuration failed."), true);
       }
     };
 
@@ -841,8 +849,8 @@ async function refreshSchedule() {
       try {
         await saveExcludes();
       } catch (error) {
-        setError(`Could not save exclusions: ${error?.message || String(error)}`);
-        toast("Could not save exclusions.", true);
+        setError(cockpit.format(_("Could not save exclusions: $0"), error?.message || String(error)));
+        toast(_("Could not save exclusions."), true);
       }
     };
 
@@ -854,18 +862,18 @@ async function refreshSchedule() {
       try {
         const mode = $("snapshotMode").value;
         if (mode === "BTRFS" && !state.btrfsAvailable) {
-          toast("BTRFS mode is unavailable on this system.", true);
+          toast(_("BTRFS mode is unavailable on this system."), true);
           $("snapshotMode").value = "RSYNC";
           return;
         }
         const cfg = (await readTimeshiftConfig()) || {};
         cfg.btrfs_mode = (mode === "BTRFS") ? "true" : "false";
         await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
-        toast(`Snapshot mode set to ${mode}.`);
+        toast(cockpit.format(_("Snapshot mode set to $0."), mode));
         await refresh();
       } catch (error) {
-        setError(`Could not save snapshot mode: ${error?.message || String(error)}`);
-        toast("Could not save snapshot mode.", true);
+        setError(cockpit.format(_("Could not save snapshot mode: $0"), error?.message || String(error)));
+        toast(_("Could not save snapshot mode."), true);
       }
     };
 
@@ -920,6 +928,7 @@ async function refreshSchedule() {
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    cockpit.translate(document);
     bindEvents();
     showView("overview");
 

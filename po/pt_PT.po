@@ -1,0 +1,545 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: cockpit-timeshift 0.1.0-beta\n"
+"Report-Msgid-Bugs-To: https://github.com/LordFader/cockpit-timeshift/issues\n"
+"POT-Creation-Date: 2026-08-20\n"
+"PO-Revision-Date: 2026-08-20\n"
+"Last-Translator: Paulo Godinho <paulo.ufc@gmail.com>\n"
+"Language-Team: Portuguese (Portugal)\n"
+"Language: pt_PT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Navigation
+msgid "Overview"
+msgstr "Visão geral"
+
+msgid "Snapshots"
+msgstr "Instantâneos"
+
+msgid "Schedule"
+msgstr "Agenda"
+
+msgid "Settings"
+msgstr "Definições"
+
+# Top bar
+msgid "Toggle navigation"
+msgstr "Alternar navegação"
+
+msgid "Toggle theme"
+msgstr "Alternar tema"
+
+msgid "Connected"
+msgstr "Ligado"
+
+msgid "Refreshing…"
+msgstr "A atualizar…"
+
+msgid "Error"
+msgstr "Erro"
+
+# Page headings
+msgid "SYSTEM PROTECTION"
+msgstr "PROTEÇÃO DO SISTEMA"
+
+msgid "Timeshift"
+msgstr "Timeshift"
+
+msgid "Create, inspect and restore system snapshots."
+msgstr "Criar, consultar e restaurar instantâneos do sistema."
+
+msgid "Create snapshot"
+msgstr "Criar instantâneo"
+
+msgid "Refresh"
+msgstr "Atualizar"
+
+msgid "Checking Timeshift…"
+msgstr "A verificar o Timeshift…"
+
+msgid "Connecting to /usr/bin/timeshift."
+msgstr "A ligar ao /usr/bin/timeshift."
+
+msgid "Checking"
+msgstr "A verificar"
+
+msgid "restore points"
+msgstr "pontos de restauro"
+
+msgid "Last snapshot"
+msgstr "Último instantâneo"
+
+msgid "Free space"
+msgstr "Espaço livre"
+
+msgid "Next snapshot"
+msgstr "Próximo instantâneo"
+
+msgid "snapshot storage"
+msgstr "armazenamento de instantâneos"
+
+msgid "systemd timer"
+msgstr "temporizador systemd"
+
+msgid "not scheduled"
+msgstr "não agendado"
+
+msgid "Recent snapshots"
+msgstr "Instantâneos recentes"
+
+msgid "The latest restore points on this system."
+msgstr "Os pontos de restauro mais recentes neste sistema."
+
+msgid "View all"
+msgstr "Ver todos"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Comment"
+msgstr "Comentário"
+
+msgid "Size"
+msgstr "Tamanho"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Actions"
+msgstr "Ações"
+
+msgid "Search snapshots"
+msgstr "Procurar instantâneos"
+
+msgid "All types"
+msgstr "Todos os tipos"
+
+msgid "Scheduled"
+msgstr "Agendado"
+
+msgid "On-demand"
+msgstr "Sob pedido"
+
+msgid "No snapshots found"
+msgstr "Não foram encontrados instantâneos"
+
+msgid "Try changing the search or filter."
+msgstr "Tente alterar a pesquisa ou o filtro."
+
+msgid "No snapshots detected."
+msgstr "Não foram detetados instantâneos."
+
+msgid "Restore"
+msgstr "Restaurar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+# Schedule view
+msgid "Automatic snapshots"
+msgstr "Instantâneos automáticos"
+
+msgid "Uses Timeshift's native scheduler: an hourly check that creates a snapshot when a level is due."
+msgstr "Usa o agendador nativo do Timeshift: uma verificação horária que cria um instantâneo quando um nível está em devido."
+
+msgid "Enable automatic snapshots"
+msgstr "Ativar instantâneos automáticos"
+
+msgid "Hourly"
+msgstr "Horário"
+
+msgid "Daily"
+msgstr "Diário"
+
+msgid "Weekly"
+msgstr "Semanal"
+
+msgid "Monthly"
+msgstr "Mensal"
+
+msgid "At boot"
+msgstr "No arranque"
+
+msgid "kept"
+msgstr "mantidos"
+
+msgid "Retention count"
+msgstr "Contagem de retenção"
+
+msgid "Retention"
+msgstr "Retenção"
+
+msgid "Retention counts are written to the Timeshift config and enforced by Timeshift through its tag system. Boot snapshots are created roughly 10 minutes after startup."
+msgstr "As contagens de retenção são escritas na configuração do Timeshift e aplicadas pelo Timeshift através do seu sistema de tags. Os instantâneos de arranque são criados cerca de 10 minutos após o arranque do sistema."
+
+msgid "Save schedule"
+msgstr "Guardar agenda"
+
+msgid "Timer status"
+msgstr "Estado do temporizador"
+
+msgid "Live systemd state for the Timeshift scheduler unit."
+msgstr "Estado systemd em tempo real para a unidade de agendamento do Timeshift."
+
+msgid "Checking…"
+msgstr "A verificar…"
+
+msgid "Waiting for output…"
+msgstr "A aguardar saída…"
+
+msgid "Working…"
+msgstr "A trabalhar…"
+
+msgid "Preparing Timeshift"
+msgstr "A preparar o Timeshift"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Close"
+msgstr "Fechar"
+
+msgid "Enable at least one snapshot level."
+msgstr "Ative pelo menos um nível de instantâneo."
+
+msgid "Schedule enabled (timeshift checks hourly, snapshots when a level is due)."
+msgstr "Agenda ativada (o timeshift verifica de hora em hora e cria instantâneos quando um nível está em devido)."
+
+msgid "Timeshift native scheduling enabled."
+msgstr "Agendamento nativo do Timeshift ativado."
+
+msgid "Schedule disabled."
+msgstr "Agenda desativada."
+
+msgid "Schedule configuration failed."
+msgstr "Falha ao configurar a agenda."
+
+msgid "enabled: $0"
+msgstr "ativado: $0"
+
+msgid "active: $0"
+msgstr "ativo: $0"
+
+msgid "next: $0"
+msgstr "próximo: $0"
+
+msgid "unit: $0"
+msgstr "unidade: $0"
+
+msgid "executable: $0"
+msgstr "executável: $0"
+
+msgid "Waiting"
+msgstr "A aguardar"
+
+msgid "Not scheduled"
+msgstr "Não agendado"
+
+# Settings view
+msgid "Timeshift integration"
+msgstr "Integração do Timeshift"
+
+msgid "Live information from the installed host executable."
+msgstr "Informações em tempo real do executável instalado no sistema."
+
+msgid "Executable"
+msgstr "Executável"
+
+msgid "Version"
+msgstr "Versão"
+
+msgid "Mode"
+msgstr "Modo"
+
+msgid "Privilege"
+msgstr "Privilégio"
+
+msgid "Snapshot engine. RSYNC works on most filesystems; BTRFS requires a BTRFS volume."
+msgstr "Motor de instantâneos. O RSYNC funciona na maioria dos sistemas de ficheiros; o BTRFS requer um volume BTRFS."
+
+msgid "RSYNC works on most filesystems; BTRFS uses native snapshots (available on this system)."
+msgstr "O RSYNC funciona na maioria dos sistemas de ficheiros; o BTRFS usa instantâneos nativos (disponível neste sistema)."
+
+msgid "RSYNC works on most filesystems. BTRFS is unavailable — the system is not on a BTRFS volume."
+msgstr "O RSYNC funciona na maioria dos sistemas de ficheiros. O BTRFS não está disponível — o sistema não está num volume BTRFS."
+
+msgid "Device: $0 · UUID: $1 · Mode: $2 · Status: $3"
+msgstr "Dispositivo: $0 · UUID: $1 · Modo: $2 · Estado: $3"
+
+msgid "Backup device"
+msgstr "Dispositivo de backup"
+
+msgid "Choose which Linux device stores the snapshots. Matches Timeshift's Settings ▸ Location."
+msgstr "Escolha qual o dispositivo Linux que guarda os instantâneos. Corresponde a Definições ▸ Localização do Timeshift."
+
+msgid "Scanning devices…"
+msgstr "A analisar dispositivos…"
+
+msgid "Note"
+msgstr "Nota"
+
+msgid "Snapshots are stored on the selected device under"
+msgstr "Os instantâneos são guardados no dispositivo selecionado em"
+
+msgid ". A separate or external device is recommended."
+msgstr ". É recomendado um dispositivo separado ou externo."
+
+msgid "Excluded items"
+msgstr "Itens excluídos"
+
+msgid "Rsync filter paths skipped during snapshots (Timeshift Filters). One pattern per line."
+msgstr "Caminhos de filtro rsync ignorados durante os instantâneos (filtros do Timeshift). Um padrão por linha."
+
+msgid "Save exclusions"
+msgstr "Guardar exclusões"
+
+msgid "Exclusions saved."
+msgstr "Exclusões guardadas."
+
+msgid "Exclusion list updated."
+msgstr "Lista de exclusões atualizada."
+
+msgid "Home directories are already excluded by default. Add extra paths to skip, e.g."
+msgstr "As diretorias pessoais já estão excluídas por predefinição. Adicione caminhos extra a ignorar, p. ex."
+
+msgid "Storage"
+msgstr "Armazenamento"
+
+msgid "Loading…"
+msgstr "A carregar…"
+
+msgid "Danger zone"
+msgstr "Zona de perigo"
+
+msgid "These actions are destructive and cannot be undone."
+msgstr "Estas ações são destrutivas e não podem ser anuladas."
+
+msgid "Delete all snapshots"
+msgstr "Eliminar todos os instantâneos"
+
+msgid "Delete every Timeshift snapshot?"
+msgstr "Eliminar todos os instantâneos do Timeshift?"
+
+msgid "This action cannot be undone."
+msgstr "Esta ação não pode ser anulada."
+
+msgid "Delete all"
+msgstr "Eliminar todos"
+
+msgid "Deleting all snapshots"
+msgstr "A eliminar todos os instantâneos"
+
+msgid "All snapshots deleted successfully."
+msgstr "Todos os instantâneos foram eliminados com sucesso."
+
+# Device list
+msgid "No eligible Linux devices found (ext4/xfs/btrfs). Press Refresh to rescan."
+msgstr "Não foram encontrados dispositivos Linux elegíveis (ext4/xfs/btrfs). Prima Atualizar para voltar a analisar."
+
+msgid "Current backup device"
+msgstr "Dispositivo de backup atual"
+
+msgid "Set as backup device"
+msgstr "Definir como dispositivo de backup"
+
+msgid "mounted"
+msgstr "montado"
+
+msgid "not mounted"
+msgstr "não montado"
+
+msgid "Device has no UUID and cannot be used by Timeshift."
+msgstr "O dispositivo não tem UUID e não pode ser usado pelo Timeshift."
+
+msgid "Backup device set to $0."
+msgstr "Dispositivo de backup definido para $0."
+
+# Protection status
+msgid "Timeshift not configured"
+msgstr "Timeshift não configurado"
+
+msgid "No backup device selected. Configure Timeshift to enable protection."
+msgstr "Nenhum dispositivo de backup selecionado. Configure o Timeshift para ativar a proteção."
+
+msgid "Timeshift reports a problem"
+msgstr "O Timeshift reporta um problema"
+
+msgid "Timeshift status: $0"
+msgstr "Estado do Timeshift: $0"
+
+msgid "No snapshots detected"
+msgstr "Não foram detetados instantâneos"
+
+msgid "Timeshift is installed, but no restore points were found."
+msgstr "O Timeshift está instalado, mas não foram encontrados pontos de restauro."
+
+msgid "System protected"
+msgstr "Sistema protegido"
+
+msgid "$0 restore point available"
+msgstr "$0 ponto de restauro disponível"
+
+msgid "$0 restore points available"
+msgstr "$0 pontos de restauro disponíveis"
+
+msgid "Enabled"
+msgstr "Ativado"
+
+msgid "Manual only"
+msgstr "Apenas manual"
+
+# Refresh / connection errors
+msgid "$0 is installed but has no backup device configured. Open the Timeshift app (\"sudo timeshift-gtk\") to select a backup device, then refresh."
+msgstr "$0 está instalado mas não tem dispositivo de backup configurado. Abra a aplicação Timeshift (\"sudo timeshift-gtk\") para selecionar um dispositivo de backup e depois atualize."
+
+msgid "Timeshift is not configured to use a backup device."
+msgstr "O Timeshift não está configurado para usar um dispositivo de backup."
+
+msgid "Unable to communicate with $0. $1"
+msgstr "Não foi possível comunicar com $0. $1"
+
+msgid "Timeshift communication failed."
+msgstr "Falha na comunicação com o Timeshift."
+
+msgid "Detected"
+msgstr "Detetado"
+
+msgid "No device information returned."
+msgstr "Não foram devolvidas informações do dispositivo."
+
+msgid "Unable to load device information."
+msgstr "Não foi possível carregar as informações do dispositivo."
+
+# Executable check
+msgid "✔ found and executable"
+msgstr "✔ encontrado e executável"
+
+msgid "✘ not found or not executable"
+msgstr "✘ não encontrado ou não executável"
+
+# Operations
+msgid "Manual system snapshot"
+msgstr "Instantâneo manual do sistema"
+
+msgid "Timeshift will create a new restore point using its configured storage."
+msgstr "O Timeshift irá criar um novo ponto de restauro usando o armazenamento configurado."
+
+msgid "Snapshot created successfully."
+msgstr "Instantâneo criado com sucesso."
+
+msgid "Creating snapshot"
+msgstr "A criar instantâneo"
+
+msgid "Restore snapshot"
+msgstr "Restaurar instantâneo"
+
+msgid "Restore the system to snapshot $0?"
+msgstr "Restaurar o sistema para o instantâneo $0?"
+
+msgid "What will happen"
+msgstr "O que vai acontecer"
+
+msgid "System files and settings are restored to the state of this snapshot."
+msgstr "Os ficheiros e definições do sistema são restaurados para o estado deste instantâneo."
+
+msgid "Boot files and EFI are handled automatically by Timeshift."
+msgstr "Os ficheiros de arranque e a EFI são tratados automaticamente pelo Timeshift."
+
+msgid "User data under /home is excluded by default and remains untouched."
+msgstr "Os dados do utilizador em /home estão excluídos por predefinição e permanecem intocados."
+
+msgid "Timeshift reinstalls the bootloader automatically if needed."
+msgstr "O Timeshift reinstala o carregador de arranque automaticamente se necessário."
+
+msgid "This changes the system and requires a reboot to complete."
+msgstr "Isto altera o sistema e requer um reinício para concluir."
+
+msgid "Restoring snapshot"
+msgstr "A restaurar instantâneo"
+
+msgid "Restore command completed."
+msgstr "Comando de restauro concluído."
+
+msgid "Delete snapshot"
+msgstr "Eliminar instantâneo"
+
+msgid "Delete $0?"
+msgstr "Eliminar $0?"
+
+msgid "This cannot be undone."
+msgstr "Isto não pode ser anulado."
+
+msgid "Deleting snapshot"
+msgstr "A eliminar instantâneo"
+
+msgid "Snapshot deleted successfully."
+msgstr "Instantâneo eliminado com sucesso."
+
+# Progress
+msgid "Operation completed successfully"
+msgstr "Operação concluída com sucesso"
+
+msgid "Snapshot completed"
+msgstr "Instantâneo concluído"
+
+msgid "Operation failed"
+msgstr "Operação falhou"
+
+msgid "Timeshift returned an error"
+msgstr "O Timeshift devolveu um erro"
+
+msgid "$0 live output update"
+msgstr "$0 atualização de saída em direto"
+
+msgid "$0 live output updates"
+msgstr "$0 atualizações de saída em direto"
+
+msgid "Mounting snapshot storage"
+msgstr "A montar o armazenamento de instantâneos"
+
+msgid "Copying system data"
+msgstr "A copiar dados do sistema"
+
+msgid "Updating boot files"
+msgstr "A atualizar os ficheiros de arranque"
+
+msgid "Unmounting storage"
+msgstr "A desmontar o armazenamento"
+
+# Error messages
+msgid "Could not configure systemd: $0"
+msgstr "Não foi possível configurar o systemd: $0"
+
+msgid "Could not save exclusions: $0"
+msgstr "Não foi possível guardar as exclusões: $0"
+
+msgid "Could not save exclusions."
+msgstr "Não foi possível guardar as exclusões."
+
+msgid "BTRFS mode is unavailable on this system."
+msgstr "O modo BTRFS não está disponível neste sistema."
+
+msgid "Snapshot mode set to $0."
+msgstr "Modo de instantâneo definido para $0."
+
+msgid "Could not save snapshot mode: $0"
+msgstr "Não foi possível guardar o modo de instantâneo: $0"
+
+msgid "Could not save snapshot mode."
+msgstr "Não foi possível guardar o modo de instantâneo."
+
+# View titles
+msgid "Browse and manage available restore points."
+msgstr "Consultar e gerir os pontos de restauro disponíveis."
+
+msgid "Configure automatic system snapshots."
+msgstr "Configurar instantâneos automáticos do sistema."
+
+msgid "Inspect Timeshift integration and storage."
+msgstr "Consultar a integração e o armazenamento do Timeshift."

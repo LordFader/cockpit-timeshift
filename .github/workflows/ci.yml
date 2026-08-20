@@ -10,9 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: JavaScript syntax check
-        run: node --check parsers.js timeshift.js
+        run: node --check parsers.js timeshift.js po.js scripts/po2js.js
+      - name: Regenerate po.js and verify it is up to date
+        run: |
+          node scripts/po2js.js
+          git diff --exit-code po.js
       - name: Unit tests
-        run: node --test test/parsers.test.js
+        run: node --test test/parsers.test.js test/po2js.test.js
       - name: Validate manifest schema (dev)
         run: node scripts/validate-manifest.js manifest.json
       - name: Validate manifest schema (production build)

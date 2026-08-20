@@ -33,6 +33,7 @@ mkdir -p "$DEST"
 install -o root -g root -m 0644 "$TMP/manifest.json" "$DEST/manifest.json"
 install -o root -g root -m 0644 "$TMP/index.html" "$DEST/index.html"
 install -o root -g root -m 0644 "$SRC/parsers.js" "$DEST/parsers.js"
+install -o root -g root -m 0644 "$SRC/po.js" "$DEST/po.js"
 install -o root -g root -m 0644 "$SRC/timeshift.js" "$DEST/timeshift.js"
 install -o root -g root -m 0644 "$TMP/timeshift.css" "$DEST/timeshift.css"
 

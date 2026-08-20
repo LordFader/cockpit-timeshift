@@ -11,7 +11,7 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 - `timeshift.js` — Main application logic (~1000 lines, strict mode, module pattern). State management, DOM manipulation, Cockpit API calls.
 - `timeshift.css` — Stylesheet with CSS custom properties (theming variables) and BEM-like class naming.
 - `manifest.json` — Cockpit app manifest; entry point, title, icon, shortcut keys.
-- `install.sh` — Installation script (requires root); copies 4 source files to `/usr/share/cockpit/timeshift/` (stable) or `/usr/share/cockpit/timeshift-dev/` (dev).
+- `install.sh` — Installation script (requires root); copies 5 source files to `/usr/share/cockpit/timeshift/` (stable) or `/usr/share/cockpit/timeshift-dev/` (dev).
 
 ## Build / Lint / Test
 
@@ -26,8 +26,11 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 - CSS uses CSS custom properties and BEM-like class naming.
 
 ### Testing
-- Unit tests for the pure parsers live in `test/parsers.test.js` (Node's
-  `node:test`, no dependencies). Run with `node --test test/parsers.test.js`.
+- Unit tests for the pure parsers live in `test/parsers.test.js` and `test/po2js.test.js`
+  (Node's `node:test`, no dependencies). Run with `node --test test/parsers.test.js test/po2js.test.js`.
+- Translations: `po/*.po` are compiled to `po.js` by `scripts/po2js.js`
+  (`node scripts/po2js.js`). `po.js` is committed and shipped with the package;
+  reload it after changing a `.po` file.
 - UI testing is manual through the Cockpit UI.
 - **Manual test flow** (from `DEVELOPMENT.md`):
   1. Install dev version: `sudo ./install.sh` then refresh Cockpit browser
@@ -45,8 +48,9 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 ### Running checks before committing
 ```bash
 npm run lint
-node --check parsers.js timeshift.js
-node --test test/parsers.test.js
+node --check parsers.js timeshift.js po.js scripts/po2js.js
+node scripts/po2js.js
+node --test test/parsers.test.js test/po2js.test.js
 sh -n install.sh
 ```
 All should pass with no output errors and exit code 0.

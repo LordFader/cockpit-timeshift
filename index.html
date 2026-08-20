@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Timeshift · Cockpit · DEV</title>
   <link rel="stylesheet" href="timeshift.css">
+  <script>
+    (function () {
+      var lang = document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1");
+      if (!lang) lang = navigator.language.toLowerCase();
+      if (lang) document.documentElement.lang = lang;
+    })();
+  </script>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
+      <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Toggle navigation" translate="aria-label">☰</button>
       <div class="brand">
         <div class="brand-mark">C</div>
         <span>Cockpit</span>
@@ -19,7 +26,7 @@
 </div>
       <div class="topbar-actions">
         <span class="connection"><span class="status-dot" id="connectionDot"></span><span id="connectionText">Connected</span></span>
-        <button class="icon-button" id="themeToggle" title="Toggle theme">◐</button>
+        <button class="icon-button" id="themeToggle" title="Toggle theme" translate="title">◐</button>
         <button class="user-button" type="button">Cockpit</button>
       </div>
     </header>
@@ -27,10 +34,10 @@
     <div class="layout">
       <aside class="sidebar" id="sidebar">
         <nav aria-label="Main navigation">
-          <button class="nav-item active" data-view="overview"><span>▦</span>Overview</button>
-          <button class="nav-item" data-view="snapshots"><span>◫</span>Snapshots</button>
-          <button class="nav-item" data-view="schedule"><span>◷</span>Schedule</button>
-          <button class="nav-item" data-view="settings"><span>⚙</span>Settings</button>
+          <button class="nav-item active" data-view="overview"><span>▦</span><span translate="yes">Overview</span></button>
+          <button class="nav-item" data-view="snapshots"><span>◫</span><span translate="yes">Snapshots</span></button>
+          <button class="nav-item" data-view="schedule"><span>◷</span><span translate="yes">Schedule</span></button>
+          <button class="nav-item" data-view="settings"><span>⚙</span><span translate="yes">Settings</span></button>
         </nav>
         <div class="sidebar-footer">
           <span class="mini-label">HOST</span>
@@ -42,13 +49,13 @@
       <main class="content">
         <div class="page-heading">
           <div>
-            <div class="eyebrow">SYSTEM PROTECTION</div>
+            <div class="eyebrow" translate="yes">SYSTEM PROTECTION</div>
             <h1 id="pageTitle">Timeshift</h1>
-            <p id="pageDescription">Create, inspect and restore system snapshots.</p>
+            <p id="pageDescription" translate="yes">Create, inspect and restore system snapshots.</p>
           </div>
           <div class="heading-actions">
-            <button class="secondary-button" id="refresh" type="button">↻ Refresh</button>
-            <button class="primary-button" id="createSnapshot" type="button">＋ Create snapshot</button>
+            <button class="secondary-button" id="refresh" type="button">↻ <span translate="yes">Refresh</span></button>
+            <button class="primary-button" id="createSnapshot" type="button">＋ <span translate="yes">Create snapshot</span></button>
           </div>
         </div>
 
@@ -58,47 +65,47 @@
           <div class="status-banner" id="statusBanner">
             <div class="status-icon" id="statusIcon">✓</div>
             <div>
-              <strong id="protectionStatus">Checking Timeshift…</strong>
-              <span id="protectionSub">Connecting to /usr/bin/timeshift.</span>
+              <strong id="protectionStatus" translate="yes">Checking Timeshift…</strong>
+              <span id="protectionSub" translate="yes">Connecting to /usr/bin/timeshift.</span>
             </div>
-            <span class="badge success" id="scheduleBadge">Checking</span>
+            <span class="badge success" id="scheduleBadge" translate="yes">Checking</span>
           </div>
 
           <div class="card-grid four">
             <article class="stat-card">
-              <span class="stat-label">Snapshots</span>
+              <span class="stat-label" translate="yes">Snapshots</span>
               <strong id="snapshotCount">—</strong>
-              <span class="stat-meta">restore points</span>
+              <span class="stat-meta" translate="yes">restore points</span>
             </article>
             <article class="stat-card">
-              <span class="stat-label">Last snapshot</span>
+              <span class="stat-label" translate="yes">Last snapshot</span>
               <strong id="lastSnapshot">—</strong>
               <span class="stat-meta" id="lastSnapshotType">—</span>
             </article>
             <article class="stat-card">
-              <span class="stat-label">Free space</span>
+              <span class="stat-label" translate="yes">Free space</span>
               <strong id="diskFree">—</strong>
-              <span class="stat-meta" id="diskMeta">snapshot storage</span>
+              <span class="stat-meta" id="diskMeta" translate="yes">snapshot storage</span>
             </article>
             <article class="stat-card">
-              <span class="stat-label">Next snapshot</span>
+              <span class="stat-label" translate="yes">Next snapshot</span>
               <strong id="nextSnapshot">—</strong>
-              <span class="stat-meta" id="nextSnapshotMeta">systemd timer</span>
+              <span class="stat-meta" id="nextSnapshotMeta" translate="yes">systemd timer</span>
             </article>
           </div>
 
           <div class="section-header">
             <div>
-              <h2>Recent snapshots</h2>
-              <p>The latest restore points on this system.</p>
+              <h2 translate="yes">Recent snapshots</h2>
+              <p translate="yes">The latest restore points on this system.</p>
             </div>
-            <button class="secondary-button" data-view-target="snapshots" type="button">View all</button>
+            <button class="secondary-button" data-view-target="snapshots" type="button"><span translate="yes">View all</span></button>
           </div>
 
           <div class="table-card">
             <table>
               <thead>
-                <tr><th>Date</th><th>Type</th><th>Comment</th><th>Size</th><th>Status</th><th>Actions</th></tr>
+                <tr><th translate="yes">Date</th><th translate="yes">Type</th><th translate="yes">Comment</th><th translate="yes">Size</th><th translate="yes">Status</th><th translate="yes">Actions</th></tr>
               </thead>
               <tbody id="recentTable"></tbody>
             </table>
@@ -109,26 +116,26 @@
           <div class="toolbar">
             <div class="search-wrap">
               <span>⌕</span>
-              <input id="snapshotSearch" type="search" placeholder="Search snapshots" autocomplete="off">
+              <input id="snapshotSearch" type="search" placeholder="Search snapshots" autocomplete="off" translate="placeholder">
             </div>
             <select id="typeFilter" class="select">
-              <option value="all">All types</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="on-demand">On-demand</option>
+              <option value="all" translate="yes">All types</option>
+              <option value="scheduled" translate="yes">Scheduled</option>
+              <option value="on-demand" translate="yes">On-demand</option>
             </select>
           </div>
 
           <div class="table-card">
             <table>
               <thead>
-                <tr><th>Date</th><th>Type</th><th>Comment</th><th>Size</th><th>Status</th><th>Actions</th></tr>
+                <tr><th translate="yes">Date</th><th translate="yes">Type</th><th translate="yes">Comment</th><th translate="yes">Size</th><th translate="yes">Status</th><th translate="yes">Actions</th></tr>
               </thead>
               <tbody id="snapshotTable"></tbody>
             </table>
             <div id="emptyState" class="empty-state hidden">
               <div class="empty-icon">◫</div>
-              <h3>No snapshots found</h3>
-              <p>Try changing the search or filter.</p>
+              <h3 translate="yes">No snapshots found</h3>
+              <p translate="yes">Try changing the search or filter.</p>
             </div>
           </div>
         </section>
@@ -137,10 +144,10 @@
           <div class="settings-card">
             <div class="settings-title">
               <div>
-                <h2>Automatic snapshots</h2>
-                <p>Uses Timeshift's native scheduler: an hourly check that creates a snapshot when a level is due.</p>
+                <h2 translate="yes">Automatic snapshots</h2>
+                <p translate="yes">Uses Timeshift's native scheduler: an hourly check that creates a snapshot when a level is due.</p>
               </div>
-              <label class="switch" title="Enable automatic snapshots">
+              <label class="switch" title="Enable automatic snapshots" translate="title">
                 <input id="scheduleEnabled" type="checkbox">
                 <span></span>
               </label>
@@ -148,34 +155,34 @@
 
             <div class="level-list">
               <label class="level-row">
-                <span><input type="checkbox" id="schedHourly"> <strong>Hourly</strong></span>
-                <span class="level-count"><select class="input" id="countHourly" title="Retention count"></select> kept</span>
+                <span><input type="checkbox" id="schedHourly"> <strong translate="yes">Hourly</strong></span>
+                <span class="level-count"><select class="input" id="countHourly" title="Retention count" translate="title"></select> <span translate="yes">kept</span></span>
               </label>
               <label class="level-row">
-                <span><input type="checkbox" id="schedDaily"> <strong>Daily</strong></span>
-                <span class="level-count"><select class="input" id="countDaily" title="Retention count"></select> kept</span>
+                <span><input type="checkbox" id="schedDaily"> <strong translate="yes">Daily</strong></span>
+                <span class="level-count"><select class="input" id="countDaily" title="Retention count" translate="title"></select> <span translate="yes">kept</span></span>
               </label>
               <label class="level-row">
-                <span><input type="checkbox" id="schedWeekly"> <strong>Weekly</strong></span>
-                <span class="level-count"><select class="input" id="countWeekly" title="Retention count"></select> kept</span>
+                <span><input type="checkbox" id="schedWeekly"> <strong translate="yes">Weekly</strong></span>
+                <span class="level-count"><select class="input" id="countWeekly" title="Retention count" translate="title"></select> <span translate="yes">kept</span></span>
               </label>
               <label class="level-row">
-                <span><input type="checkbox" id="schedMonthly"> <strong>Monthly</strong></span>
-                <span class="level-count"><select class="input" id="countMonthly" title="Retention count"></select> kept</span>
+                <span><input type="checkbox" id="schedMonthly"> <strong translate="yes">Monthly</strong></span>
+                <span class="level-count"><select class="input" id="countMonthly" title="Retention count" translate="title"></select> <span translate="yes">kept</span></span>
               </label>
               <label class="level-row">
-                <span><input type="checkbox" id="schedBoot"> <strong>At boot</strong></span>
-                <span class="level-count"><select class="input" id="countBoot" title="Retention count"></select> kept</span>
+                <span><input type="checkbox" id="schedBoot"> <strong translate="yes">At boot</strong></span>
+                <span class="level-count"><select class="input" id="countBoot" title="Retention count" translate="title"></select> <span translate="yes">kept</span></span>
               </label>
             </div>
 
             <div class="info-box">
-              <strong>Retention</strong>
-              <span>Retention counts are written to the Timeshift config and enforced by Timeshift through its tag system. Boot snapshots are created roughly 10 minutes after startup.</span>
+              <strong translate="yes">Retention</strong>
+              <span translate="yes">Retention counts are written to the Timeshift config and enforced by Timeshift through its tag system. Boot snapshots are created roughly 10 minutes after startup.</span>
             </div>
 
             <div class="settings-actions">
-              <button class="primary-button" id="saveSchedule" type="button">Save schedule</button>
+              <button class="primary-button" id="saveSchedule" type="button"><span translate="yes">Save schedule</span></button>
               <span id="scheduleSaved" class="saved-message"></span>
             </div>
           </div>
@@ -183,35 +190,35 @@
           <div class="settings-card">
             <div class="section-header compact">
               <div>
-                <h2>Timer status</h2>
-                <p>Live systemd state for the Timeshift scheduler unit.</p>
+                <h2 translate="yes">Timer status</h2>
+                <p translate="yes">Live systemd state for the Timeshift scheduler unit.</p>
               </div>
-              <button class="secondary-button" id="refreshTimer" type="button">Refresh</button>
+              <button class="secondary-button" id="refreshTimer" type="button"><span translate="yes">Refresh</span></button>
             </div>
-            <pre id="timerStatus">Checking…</pre>
+            <pre id="timerStatus" translate="yes">Checking…</pre>
           </div>
         </section>
 
         <section id="settingsView" class="view hidden">
           <div class="settings-card">
-            <h2>Timeshift integration</h2>
-            <p>Live information from the installed host executable.</p>
+            <h2 translate="yes">Timeshift integration</h2>
+            <p translate="yes">Live information from the installed host executable.</p>
             <div class="form-grid">
-              <label>Executable
+              <label><span translate="yes">Executable</span>
                 <input class="input" value="/usr/bin/timeshift" id="snapshotLocation" readonly>
-                <span class="exec-check" id="execCheck">Checking…</span>
+                <span class="exec-check" id="execCheck" translate="yes">Checking…</span>
               </label>
-              <label>Version
+              <label><span translate="yes">Version</span>
                 <input class="input" id="version" readonly>
               </label>
-              <label>Mode
+              <label><span translate="yes">Mode</span>
                 <select class="input" id="snapshotMode">
                   <option value="RSYNC">RSYNC</option>
                   <option value="BTRFS">BTRFS</option>
                 </select>
-                <span class="mode-hint">Snapshot engine. RSYNC works on most filesystems; BTRFS requires a BTRFS volume.</span>
+                <span class="mode-hint" translate="yes">Snapshot engine. RSYNC works on most filesystems; BTRFS requires a BTRFS volume.</span>
               </label>
-              <label>Privilege
+              <label><span translate="yes">Privilege</span>
                 <input class="input" id="privilege" readonly>
               </label>
             </div>
@@ -220,49 +227,49 @@
           <div class="settings-card">
             <div class="settings-title">
               <div>
-                <h2>Backup device</h2>
-                <p>Choose which Linux device stores the snapshots. Matches Timeshift's Settings ▸ Location.</p>
+                <h2 translate="yes">Backup device</h2>
+                <p translate="yes">Choose which Linux device stores the snapshots. Matches Timeshift's Settings ▸ Location.</p>
               </div>
             </div>
             <div id="deviceList" class="device-list">
-              <p class="muted">Scanning devices…</p>
+              <p class="muted" translate="yes">Scanning devices…</p>
             </div>
             <div class="info-box">
-              <strong>Note</strong>
-              <span>Snapshots are stored on the selected device under <code>/timeshift</code>. A separate or external device is recommended.</span>
+              <strong translate="yes">Note</strong>
+              <span><span translate="yes">Snapshots are stored on the selected device under</span> <code>/timeshift</code><span translate="yes">. A separate or external device is recommended.</span></span>
             </div>
           </div>
 
           <div class="settings-card">
             <div class="settings-title">
               <div>
-                <h2>Excluded items</h2>
-                <p>Rsync filter paths skipped during snapshots (Timeshift Filters). One pattern per line.</p>
+                <h2 translate="yes">Excluded items</h2>
+                <p translate="yes">Rsync filter paths skipped during snapshots (Timeshift Filters). One pattern per line.</p>
               </div>
             </div>
             <textarea id="excludesInput" class="input excludes" rows="6" spellcheck="false" placeholder="/var/cache/**&#10;/snap&#10;/mnt/data/**"></textarea>
             <div class="info-box">
-              <strong>Note</strong>
-              <span>Home directories are already excluded by default. Add extra paths to skip, e.g. <code>/var/cache/**</code>, <code>/mnt/data/**</code>.</span>
+              <strong translate="yes">Note</strong>
+              <span><span translate="yes">Home directories are already excluded by default. Add extra paths to skip, e.g.</span> <code>/var/cache/**</code>, <code>/mnt/data/**</code></span>
             </div>
             <div class="settings-actions">
-              <button class="primary-button" id="saveExcludes" type="button">Save exclusions</button>
+              <button class="primary-button" id="saveExcludes" type="button"><span translate="yes">Save exclusions</span></button>
               <span id="excludesSaved" class="saved-message"></span>
             </div>
           </div>
 
           <div class="settings-card">
-            <h2>Storage</h2>
-            <p id="storageInfo">Loading…</p>
-            <pre id="devices">Loading…</pre>
+            <h2 translate="yes">Storage</h2>
+            <p id="storageInfo" translate="yes">Loading…</p>
+            <pre id="devices" translate="yes">Loading…</pre>
           </div>
 
           <div class="danger-card">
             <div>
-              <h2>Danger zone</h2>
-              <p>These actions are destructive and cannot be undone.</p>
+              <h2 translate="yes">Danger zone</h2>
+              <p translate="yes">These actions are destructive and cannot be undone.</p>
             </div>
-            <button class="danger-button" id="clearSnapshots" type="button">Delete all snapshots</button>
+            <button class="danger-button" id="clearSnapshots" type="button"><span translate="yes">Delete all snapshots</span></button>
           </div>
         </section>
       </main>
@@ -273,16 +280,16 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal-header">
         <h2 id="modalTitle"></h2>
-        <button class="icon-button" id="closeModal" type="button" aria-label="Close">×</button>
+        <button class="icon-button" id="closeModal" type="button" aria-label="Close" translate="aria-label">×</button>
       </div>
       <div id="modalBody"></div>
       <div id="progressArea" class="progress-area hidden" aria-live="polite">
         <div class="progress-head">
-          <div><strong id="progressTitle">Working…</strong><span id="progressPhase">Preparing Timeshift</span></div>
+          <div><strong id="progressTitle" translate="yes">Working…</strong><span id="progressPhase" translate="yes">Preparing Timeshift</span></div>
           <strong id="progressPercent">—</strong>
         </div>
         <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
-        <div class="progress-meta"><span id="progressElapsed">00:00</span><span id="progressCounter">Waiting for output…</span></div>
+        <div class="progress-meta"><span id="progressElapsed">00:00</span><span id="progressCounter" translate="yes">Waiting for output…</span></div>
         <pre id="progressLog" class="progress-log"></pre>
       </div>
       <div class="modal-actions" id="modalActions"></div>
@@ -293,6 +300,7 @@
 
   <script src="../base1/cockpit.js"></script>
   <script src="parsers.js"></script>
+  <script src="po.js"></script>
   <script src="timeshift.js"></script>
 </body>
 </html>
