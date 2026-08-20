@@ -28,5 +28,14 @@ Parallel development package based on the first approved public beta.
   inline indicator; the path is fixed for security.
 - Settings: retention counts are fixed 1–20 dropdowns, preventing
   out-of-range values.
+- Schedule: retention count defaults use the common recommendations
+  (hourly 2, daily 5, weekly 3, monthly 2, boot 5) when the config has no
+  value.
 - Create, Delete and Restore are the currently tested core operations.
 - Schedule functionality remains under testing.
+
+---
+
+## v0.1.0-beta-dev (2026-08-19)
+
+Snapshot of the first approved public beta (pre-GUI-parity).
