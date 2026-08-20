@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build production assets
+        run: |
+          mkdir -p dist
+          sed \
+            -e 's/"timeshift-dev"/"timeshift"/' \
+            -e 's/"Timeshift Dev"/"Timeshift"/' \
+            manifest.json > dist/manifest.json
+          sed \
+            -e 's/Timeshift · Cockpit · DEV/Timeshift · Cockpit/' \
+            -e 's/Timeshift <span class="dev-badge">DEV<\/span>/Timeshift/' \
+            index.html > dist/index.html
+          awk '
+            /^\.dev-badge/ { inblock=1; next }
+            { if (inblock) { if ($0 ~ /^}/) inblock=0; next } }
+            { print }
+          ' timeshift.css > dist/timeshift.css
+          cp parsers.js timeshift.js dist/
+
+      - name: Validate production manifest
+        run: node scripts/validate-manifest.js dist/manifest.json
+
+      - name: Create release artifact
+        run: tar -czf "cockpit-timeshift-${GITHUB_REF_NAME}.tar.gz" -C dist .
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Cockpit Timeshift $GITHUB_REF_NAME" \
+            --generate-notes \
+            "cockpit-timeshift-${GITHUB_REF_NAME}.tar.gz"

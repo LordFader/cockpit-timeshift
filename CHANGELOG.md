@@ -1,5 +1,30 @@
 # Changelog
 
+## [v0.1.0-beta](https://github.com/LordFader/cockpit-timeshift/releases/tag/v0.1.0-beta) (2026-08-20)
+
+First approved public release.
+
+### Added
+- Ship as a tarball release artifact (`cockpit-timeshift-v0.1.0-beta.tar.gz`)
+  built and attached automatically from the `v*` tag workflow.
+- `scripts/validate-manifest.js`: schema validation of the Cockpit manifest
+  (required fields + tool entries + referenced entry file), run in CI for
+  both the dev and the production-built manifest.
+- ESLint (flat config) wired into CI: `npm run lint` on every push/PR.
+
+### Changed
+- Pure parsing helpers extracted into a shared `parsers.js` (browser +
+  Node), covered by 13 unit tests (`node --test test/parsers.test.js`).
+- Dropped unused code detected by lint: `LINUX_FS` destructure and
+  `LEGACY_SERVICE` constant.
+
+### Notes
+- Stable install remains `/usr/share/cockpit/timeshift` via `install.sh`;
+  the tarball ships the same production build (DEV markers stripped).
+- The development line continues as `v0.1.0-beta-dev` (see below).
+
+---
+
 ## v0.1.0-beta-dev
 
 Parallel development package based on the first approved public beta.
