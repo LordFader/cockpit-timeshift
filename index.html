@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Timeshift · Cockpit · DEV</title>
   <link rel="stylesheet" href="timeshift.css">
-  <script>
-    (function () {
-      var lang = document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1");
-      if (!lang) lang = navigator.language.toLowerCase();
-      if (lang) document.documentElement.lang = lang;
-    })();
-  </script>
 </head>
 <body>
   <div class="app-shell">
@@ -299,6 +292,7 @@
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <script src="../base1/cockpit.js"></script>
+  <script src="../base1/po.js"></script>
   <script src="parsers.js"></script>
   <script src="po.js"></script>
   <script src="timeshift.js"></script>
