@@ -12,6 +12,7 @@
     version: "--",
     mode: "--",
     privilege: "--",
+    btrfsAvailable: false,
     devices: "--",
     device: "--",
     uuid: "--",
@@ -170,6 +171,10 @@
     }
     const cfg = await readTimeshiftConfig();
     state.backupUuid = (cfg && String(cfg.backup_device_uuid || "").trim()) || "";
+
+    const rootBtrfs = state.devicesList.some(d =>
+      d.fstype === "btrfs" && d.mounts.includes("/"));
+    state.btrfsAvailable = rootBtrfs;
   }
 
   function renderDevices() {
@@ -390,8 +395,18 @@
 
   function renderSettings() {
     $("version").value = state.version;
-    $("snapshotMode").value = state.mode;
+    const modeSelect = $("snapshotMode");
+    const btrfsOpt = modeSelect?.querySelector('option[value="BTRFS"]');
+    if (btrfsOpt) btrfsOpt.disabled = !state.btrfsAvailable;
+    modeSelect.value = ["RSYNC", "BTRFS"].includes(state.mode) ? state.mode : "RSYNC";
     $("privilege").value = state.privilege;
+
+    const modeHint = modeSelect?.closest("label")?.querySelector(".mode-hint");
+    if (modeHint) {
+      modeHint.textContent = state.btrfsAvailable
+        ? "RSYNC works on most filesystems; BTRFS uses native snapshots (available on this system)."
+        : "RSYNC works on most filesystems. BTRFS is unavailable — the system is not on a BTRFS volume.";
+    }
 
     $("storageInfo").textContent =
       `Device: ${state.device} · UUID: ${state.uuid} · Mode: ${state.mode} · Status: ${state.timeshiftStatus}`;
@@ -477,7 +492,13 @@
     for (const lvl of SCHEDULE_LEVELS) {
       $(`sched${cap(lvl)}`).checked = levels[lvl];
       const count = $(`count${cap(lvl)}`);
-      if (count) count.value = String(cfg[`count_${lvl}`] ?? (lvl === "hourly" ? "2" : lvl === "boot" ? "5" : "3"));
+      if (count) {
+        if (!count.dataset.populated) {
+          for (let n = 1; n <= 20; n++) count.add(new Option(String(n), String(n)));
+          count.dataset.populated = "1";
+        }
+        count.value = String(cfg[`count_${lvl}`] ?? (lvl === "hourly" ? "2" : lvl === "boot" ? "5" : "3"));
+      }
     }
 
     state.scheduleEnabled = SCHEDULE_LEVELS.some(lvl => levels[lvl]);
@@ -503,6 +524,21 @@
       `badge ${state.timerActive ? "success" : ""}`;
   }
 
+  async function checkExecutable() {
+    const el = $("execCheck");
+    if (!el) return;
+    try {
+      await cockpit.spawn(["sh", "-c", `test -x ${TS}`], { superuser: "try" });
+      el.textContent = "✔ found and executable";
+      el.classList.remove("bad");
+      el.classList.add("good");
+    } catch {
+      el.textContent = "✘ not found or not executable";
+      el.classList.remove("good");
+      el.classList.add("bad");
+    }
+  }
+
   async function refresh() {
     clearError();
     $("connectionText").textContent = "Refreshing…";
@@ -511,6 +547,7 @@
       await refreshTimeshift();
       try { await loadDeviceData(); } catch {}
       try { await refreshExcludes(); } catch {}
+      try { await checkExecutable(); } catch {}
       renderStats();
       renderTables();
       loadSnapshotSizes();
@@ -898,6 +935,25 @@
     $("clearSnapshots").onclick = deleteAll;
     $("snapshotSearch").oninput = renderTables;
     $("typeFilter").onchange = renderTables;
+
+    $("snapshotMode").onchange = async () => {
+      try {
+        const mode = $("snapshotMode").value;
+        if (mode === "BTRFS" && !state.btrfsAvailable) {
+          toast("BTRFS mode is unavailable on this system.", true);
+          $("snapshotMode").value = "RSYNC";
+          return;
+        }
+        const cfg = (await readTimeshiftConfig()) || {};
+        cfg.btrfs_mode = (mode === "BTRFS") ? "true" : "false";
+        await writeSystemFile("/etc/timeshift/timeshift.json", JSON.stringify(cfg, null, 2));
+        toast(`Snapshot mode set to ${mode}.`);
+        await refresh();
+      } catch (error) {
+        setError(`Could not save snapshot mode: ${error?.message || String(error)}`);
+        toast("Could not save snapshot mode.", true);
+      }
+    };
 
     $("recentTable").addEventListener("click", handleTableAction);
     $("snapshotTable").addEventListener("click", handleTableAction);
