@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Full pt_PT translation of the UI via Cockpit gettext: static HTML marked
+  with `translate` attributes, dynamic strings wrapped in `_()`, and
+  `cockpit.translate(document)` applied on boot.
+- `scripts/po2js.js`: dependency-free generator that compiles `po/*.po` into
+  a committed `po.js` (consumed by `cockpit.locale()`), covered by unit tests
+  (`test/po2js.test.js`).
+
+### Changed
+- `po/` catalog (`LINGUAS` + `pt_PT.po`, ~200 entries) compiled and shipped
+  with the package; `install.sh` and the release artifact now include
+  `po.js`.
+- CI regenerates `po.js` and fails if it drifts from `po/*.po`.
+
+---
+
 ## [v0.1.0-beta](https://github.com/LordFader/cockpit-timeshift/releases/tag/v0.1.0-beta) (2026-08-20)
 
 First approved public release.

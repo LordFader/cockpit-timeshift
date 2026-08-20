@@ -6,8 +6,9 @@
 > Estado atual: Fases 1–3 de paridade GUI concluídas + hardening de Settings
 > (mode BTRFS/RSYNC, validação executável, retention dropdowns, defaults
 > recomendados). R#1 (testes parsers), R#2 (CI + manifest + artefacto),
-> R#3 (tag `v0.1.0-beta` + Release) e R#4 (ESLint) concluídos. Master no
-> `4ef5c9a` (#12); release `v0.1.0-beta` publicada.
+> R#3 (tag `v0.1.0-beta` + Release), R#4 (ESLint) e R#6 (housekeeping)
+> concluídos. R#5 (i18n pt_PT) concluído. Master no `d31442d` (#14);
+> release `v0.1.0-beta` publicada.
 
 ---
 
@@ -18,7 +19,7 @@ Auditoria feita a 2026-08-20:
 - App em vanilla JS/HTML/CSS, sem build system nem package.json.
 - CI atual: `node --check timeshift.js` + `sh -n install.sh` (push).
 - **Zero testes automatizados** ~~(resolvido — R#1: `test/parsers.test.js`)~~.
-- **Sem i18n** (`no po/ dir`), `index.html` com `lang="en"` fixo.
+- **Sem i18n** ~~(resolvido — R#5: po/pt_PT.po + po.js gerado)~~.
 - **Sem ESLint/Prettier** ~~(resolvido — R#4: `eslint.config.js` na CI)~~.
 - **Sem tags/releases Git** ~~(resolvido — R#3: tag `v0.1.0-beta` + Release)~~.
 - `git-backup.sh` está em `tools/` (marcado opcional no .gitignore).
@@ -53,12 +54,17 @@ No `.github/workflows/ci.yml`:
 - `eslint.config.js` (flat config), `npm run lint`, job de lint na CI.
 - Prettier não configurado (fora de âmbito por agora).
 
-### 5. i18n / traduções
+### 5. i18n / traduções — ✅ concluído (PR #14)
 
-- Integrar o mecanismo gettext do Cockpit (estrutura `po/`, `LINGUAS`,
-  ficheiros `.po`, compilação `*.mo`).
-- Alargar `lang` dinâmico no `index.html` em vez de `lang="en"` fixo.
-- Primeiro alvo: Português (utilizador principal).
+- Mecanismo gettext do Cockpit: `translate` attributes no HTML estático +
+  `_()` em todas as strings dinâmicas; `cockpit.translate(document)` no boot.
+- Estrutura `po/` (`LINGUAS` + `pt_PT.po` com ~200 entradas) compilada para
+  `po.js` por `scripts/po2js.js` (sem msgfmt/xgettext), comunitado e validado
+  na CI (`git diff --exit-code` após regeneração) e empacotado no `install.sh`
+  e no artefacto de release.
+- `lang` dinâmico no `index.html` deixa de ser fixo (`html lang` definido a
+  partir do cookie `CockpitLang`).
+- Primeiro alvo concluído: Português (utilizador principal).
 
 ### 6. Housekeeping leve — ✅ concluído
 
@@ -72,7 +78,7 @@ No `.github/workflows/ci.yml`:
 1. ~~Testes unitários dos parsers~~ ✅
 2. ~~ESLint mínimo na CI~~ ✅
 3. ~~Tag `v0.1.0-beta` + Release GitHub com artefacto~~ ✅
-4. **i18n (PT primeiro).** ← próximo
+4. ~~i18n (PT primeiro)~~ ✅
 5. ~~Housekeeping (`tools/`, `CONTRIBUTING.md`)~~ ✅
 
 ---
