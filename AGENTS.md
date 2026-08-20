@@ -18,13 +18,17 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 **No build system.** Project consists of static files installed via `sudo ./install.sh`.
 
 ### Linting
-- No ESLint, Prettier, or CSS linting configured.
+- ESLint (flat config `eslint.config.js`) lints all JavaScript in the repo.
+  Run locally with `npm run lint`; CI runs `npm ci` + `npm run lint`.
+- No Prettier or CSS linting configured.
 - Code quality maintained through code review and manual inspection.
 - JS follows strict mode (`"use strict"`) and the established module pattern.
 - CSS uses CSS custom properties and BEM-like class naming.
 
 ### Testing
-- **No automated tests exist.** Testing is manual through the Cockpit UI.
+- Unit tests for the pure parsers live in `test/parsers.test.js` (Node's
+  `node:test`, no dependencies). Run with `node --test test/parsers.test.js`.
+- UI testing is manual through the Cockpit UI.
 - **Manual test flow** (from `DEVELOPMENT.md`):
   1. Install dev version: `sudo ./install.sh` then refresh Cockpit browser
   2. View snapshots (Overview page)
@@ -38,11 +42,14 @@ A **Cockpit plugin** providing a web UI for Timeshift snapshot management. Pure 
 - No type checker is used. The project is vanilla JavaScript (no TypeScript).
 - JSDoc or Flow are not configured.
 
-### Running a single syntax check
+### Running checks before committing
 ```bash
-node --check timeshift.js
+npm run lint
+node --check parsers.js timeshift.js
+node --test test/parsers.test.js
+sh -n install.sh
 ```
-Expected: no output and exit code 0.
+All should pass with no output errors and exit code 0.
 
 ## Code Style Guidelines
 
@@ -104,6 +111,6 @@ Expected: no output and exit code 0.
 - Always inspect `git status` and `git branch --show-current` before changing code.
 - Do not delete/restore snapshots, modify systemd timers, or execute destructive system commands unless explicitly requested.
 - Prefer minimal changes. Do not rewrite working code unnecessarily.
-- Before declaring success: run `node --check timeshift.js` then verify the application in Cockpit.
+- Before declaring success: run the checks in *Running checks before committing* then verify the application in Cockpit.
 - When a change is potentially destructive or affects system configuration, stop and ask for confirmation.
 - Do not commit automatically unless explicitly requested. Before suggesting a commit: `git diff` and `git status`.
