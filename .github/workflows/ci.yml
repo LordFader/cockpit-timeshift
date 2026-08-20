@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: JavaScript syntax check
-        run: node --check timeshift.js
+        run: node --check parsers.js timeshift.js
+      - name: Unit tests
+        run: node --test test/parsers.test.js
       - name: Shell syntax check
         run: sh -n install.sh
